@@ -15,12 +15,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000', // tu backend con Socket.IO
-        changeOrigin: true,
-      },
-    },
+    host: true,   // 👈 para poder verlo en otra PC o celular
+    port: 5173,   // 👈 puerto del front
   },
 })

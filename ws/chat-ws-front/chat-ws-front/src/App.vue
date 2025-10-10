@@ -49,9 +49,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { io } from "socket.io-client";
 import axios from "axios";
+
+const BACKEND_URL = "https://villas-kits-second-interval.trycloudflare.com";
 
 const username = ref("");
 const joined = ref(false);
@@ -63,38 +65,86 @@ const selectedUser = ref(null);
 const groupMode = ref(true);
 const grupo = "ForoGeneral";
 
+// 🧠 caches de historial
+const historialPrivado = ref({});
+const historialGrupo = ref([]);
+
 async function joinChat() {
   if (!username.value.trim()) {
     alert("Escribe un nombre");
     return;
   }
 
-  await axios.post("/api/usuarios", { nombre: username.value });
+  await axios.post(`${BACKEND_URL}/api/usuarios`, { nombre: username.value });
   joined.value = true;
 
-  // conectar socket
-  socket.value = io("http://localhost:3000");
+  socket.value = io(BACKEND_URL, { transports: ["websocket"] });
   socket.value.emit("join", username.value);
 
-  socket.value.on("group_message", (msg) => {
-    if (msg.grupo === grupo) messages.value.push(msg);
+  // === HISTORIAL PRIVADO ===
+  socket.value.on("chat_history", (mensajes) => {
+    historialPrivado.value[username.value] = mensajes.map((m) => ({
+      from: m.remitente_id?.nombre || "desconocido",
+      to: m.destinatario_id?.nombre || "",
+      contenido: m.contenido,
+      timestamp: m.timestamp,
+    }));
+    messages.value = historialPrivado.value[username.value];
+  });
+
+  // === HISTORIAL DE GRUPO ===
+  socket.value.on("group_history", ({ grupo, mensajes }) => {
+    historialGrupo.value = mensajes.map((m) => ({
+      from: m.remitente_id?.nombre || "desconocido",
+      contenido: m.contenido,
+      timestamp: m.timestamp,
+      grupo,
+    }));
+    if (groupMode.value) messages.value = historialGrupo.value;
   });
 
   socket.value.on("private_message", (msg) => {
-    messages.value.push(msg);
+    // guarda en cache por usuario
+    const key =
+      msg.from === username.value ? msg.to : msg.from;
+    if (!historialPrivado.value[key]) historialPrivado.value[key] = [];
+    historialPrivado.value[key].push(msg);
+
+    // si estoy en ese chat, mostrarlo
+    if (selectedUser.value?.nombre === key) messages.value.push(msg);
   });
 
-  const res = await axios.get("/api/usuarios");
+  socket.value.on("group_message", (msg) => {
+    historialGrupo.value.push(msg);
+    if (groupMode.value) messages.value.push(msg);
+  });
+
+  const res = await axios.get(`${BACKEND_URL}/api/usuarios`);
   users.value = res.data;
+  socket.value.emit("join_group", grupo);
 }
 
 function toggleMode() {
   groupMode.value = !groupMode.value;
+  selectedUser.value = null;
+  messages.value = groupMode.value ? historialGrupo.value : [];
 }
 
 function selectUser(u) {
   selectedUser.value = u;
   groupMode.value = false;
+
+  // 💡 mostrar historial si ya lo tenés cacheado
+  if (historialPrivado.value[u.nombre]) {
+    messages.value = historialPrivado.value[u.nombre];
+  } else {
+    // si no está, pedir al backend su historial
+    socket.value.emit("join", username.value, (ack) => {
+      if (ack.ok) {
+        console.log("🔁 Reunido en chat, recibiendo historial...");
+      }
+    });
+  }
 }
 
 function sendMessage() {
@@ -108,9 +158,11 @@ function sendMessage() {
       contenido: message.value,
     });
   }
+
   message.value = "";
 }
 </script>
+
 
 <style>
 body {
