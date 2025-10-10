@@ -1,0 +1,24 @@
+{
+  "name": "chat-ws-back",
+  "version": "1.0.0",
+  "description": "Backend modularizado para chat en tiempo real con Socket.IO y Supabase",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": ["chat", "websocket", "socket.io", "supabase", "express", "realtime"],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
