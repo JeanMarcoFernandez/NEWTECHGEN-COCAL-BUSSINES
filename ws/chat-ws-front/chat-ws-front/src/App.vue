@@ -53,7 +53,7 @@ import { ref } from "vue";
 import { io } from "socket.io-client";
 import axios from "axios";
 
-const BACKEND_URL = "https://villas-kits-second-interval.trycloudflare.com";
+const BACKEND_URL = "https://eye-realtors-availability-mas.trycloudflare.com";
 
 const username = ref("");
 const joined = ref(false);
