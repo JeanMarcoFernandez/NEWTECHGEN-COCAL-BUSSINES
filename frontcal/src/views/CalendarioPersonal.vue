@@ -5,7 +5,14 @@
     <div class="calendar-wrapper">
       <FiltroEventos :filtros="filtros" @filtrar="aplicarFiltros" />
 
+      <!-- 🕒 Muestra carga mientras se preparan eventos -->
+      <div v-if="!calendarReady" class="loading">
+        <p>Cargando calendario...</p>
+      </div>
+
+      <!-- ✅ Renderiza calendario solo cuando todo está listo -->
       <FullCalendar
+        v-else
         ref="calendarRef"
         :plugins="calendarPlugins"
         :initialView="vistaActual"
@@ -43,7 +50,9 @@ export default {
   components: { FullCalendar, BarraSuperior, FiltroEventos, ModalEvento },
   data() {
     return {
+      // ✅ Inicializa todo desde el principio
       vistaActual: "dayGridMonth",
+      calendarReady: false,
       calendarPlugins: [
         dayGridPlugin,
         timeGridPlugin,
@@ -81,7 +90,22 @@ export default {
     };
   },
   mounted() {
-    this.eventosFiltrados = this.eventos;
+    // ✅ ya no hay delay en los plugins, solo en los eventos
+    setTimeout(() => {
+      this.eventosFiltrados = this.eventos;
+      this.calendarReady = true;
+
+      // 🧩 Garantiza que la vista se actualice solo cuando el ref exista
+      this.$nextTick(() => {
+        const calendarEl = this.$refs.calendarRef;
+        if (calendarEl && calendarEl.getApi) {
+          const api = calendarEl.getApi();
+          if (api.view.type !== this.vistaActual) {
+            api.changeView(this.vistaActual);
+          }
+        }
+      });
+    }, 200);
   },
   methods: {
     aplicarFiltros(f) {
@@ -140,6 +164,7 @@ export default {
   min-height: 100vh;
   background: linear-gradient(120deg, #0d1b2a, #1b263b);
   color: #fff;
+  overflow-y: auto;
 }
 
 .calendar-wrapper {
@@ -150,5 +175,33 @@ export default {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.loading {
+  color: #ccc;
+  padding: 3rem;
+  font-size: 1.3rem;
+  text-align: center;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+
+.fc {
+  background: #fff;
+  border-radius: 12px;
+  color: #000;
+  padding: 1rem;
+  min-height: 700px;
 }
 </style>
