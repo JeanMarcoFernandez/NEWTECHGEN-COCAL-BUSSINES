@@ -1,11 +1,9 @@
-import pkg from 'pg';
+// ✅ Conexión oficial a Supabase
+import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const { Pool } = pkg;
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-
-export async function q(text, params = []) {
-  const res = await pool.query(text, params);
-  return res.rows;
-}
+export const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
