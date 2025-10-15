@@ -1,20 +1,63 @@
-import { q } from '../db.js';
+import { supabase } from '../db.js';
 import bcrypt from 'bcrypt';
 
-export async function list(req,res,next){
-  try { res.json(await q('SELECT id, correo, nombre, apellido, rol, estado, id_empresa FROM usuario ORDER BY id DESC')); }
-  catch(e){ next(e); }
+export async function list(req, res, next) {
+  try {
+    const { data, error } = await supabase
+      .from('usuario')
+      .select('id, correo, nombre, apellido, rol, estado, id_empresa')
+      .order('id', { ascending: false });
+
+    if (error) throw error;
+    res.json(data);
+  } catch (e) {
+    console.error('❌ Error al listar usuarios:', e.message);
+    next(e);
+  }
 }
 
-export async function create(req,res,next){
+export async function create(req, res, next) {
   try {
-    const { id_empresa, correo, contrasena, nombre, apellido, cargo, rol='EMPLEADO', telefono } = req.body;
-    const hash = await bcrypt.hash(contrasena, Number(process.env.BCRYPT_ROUNDS || 10));
-    const rows = await q(
-      `INSERT INTO usuario (id_empresa,correo,contrasena,nombre,apellido,cargo,rol,telefono)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, correo, nombre, apellido, rol, id_empresa`,
-      [id_empresa,correo,hash,nombre,apellido,cargo,rol,telefono]
+    const {
+      id_empresa,
+      correo,
+      contrasena,
+      nombre,
+      apellido,
+      cargo,
+      rol = 'EMPLEADO',
+      telefono,
+    } = req.body;
+
+    
+    const hash = await bcrypt.hash(
+      contrasena,
+      Number(process.env.BCRYPT_ROUNDS || 10)
     );
-    res.status(201).json(rows[0]);
-  } catch(e){ next(e); }
+
+    
+    const { data, error } = await supabase
+      .from('usuario')
+      .insert([
+        {
+          id_empresa,
+          correo,
+          contrasena: hash,
+          nombre,
+          apellido,
+          cargo,
+          rol,
+          telefono,
+        },
+      ])
+      .select('id, correo, nombre, apellido, rol, id_empresa')
+      .single(); // 🔹 retorna solo un objeto (no array)
+
+    if (error) throw error;
+
+    res.status(201).json(data);
+  } catch (e) {
+    console.error('❌ Error al crear usuario:', e.message);
+    next(e);
+  }
 }
