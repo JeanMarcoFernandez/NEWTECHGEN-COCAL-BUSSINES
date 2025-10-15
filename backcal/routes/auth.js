@@ -4,6 +4,6 @@ const router = Router();
 
 router.post('/login', login);
 router.get('/me', me);
-router.post('/seed-admin', seedAdmin); // crear admin rápido en dev
+router.post('/seed-admin', seedAdmin); 
 
 export default router;

@@ -5,7 +5,7 @@ import TipoCalendario from "../views/TipoCalendario.vue";
 import Login from "../views/Login.vue"; // 🔒 Pantalla de acceso
 
 const routes = [
-  { path: "/", redirect: "/empresa" }, // 🔥 inicia en registro de empresa
+  { path: "/", redirect: "/empresa" },
   { path: "/empresa", component: EmpresaRegistro },
   { path: "/usuario", component: UsuarioRegistro },
   { path: "/login", component: Login },
@@ -17,16 +17,19 @@ const router = createRouter({
   routes,
 });
 
-// 🧠 Middleware: protege las rutas internas
+// 🧠 Middleware ajustado (modo dev sin bloqueo)
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
 
-  // rutas libres (empresa, usuario y login)
-  if (["/empresa", "/usuario", "/login"].includes(to.path)) {
+  // 🔓 Permitir acceso libre durante el maquetado
+  // (empresa, usuario, calendario, login)
+  const publicPaths = ["/empresa", "/usuario", "/login", "/calendario/tipo"];
+
+  if (publicPaths.includes(to.path)) {
     return next();
   }
 
-  // rutas de calendario requieren token
+  // 🔒 En el futuro, cuando haya login funcional:
   if (to.path.startsWith("/calendario") && !token) {
     return next("/login");
   }
