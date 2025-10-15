@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import EmpresaRegistro from "../views/EmpresaRegistro.vue";
 import UsuarioRegistro from "../views/UsuarioRegistro.vue";
 import TipoCalendario from "../views/TipoCalendario.vue";
-import Login from "../views/Login.vue"; // 🔒 Pantalla de acceso
+import CalendarioPersonal from "../views/CalendarioPersonal.vue"; 
+import Login from "../views/Login.vue";
 
 const routes = [
   { path: "/", redirect: "/empresa" },
@@ -10,6 +11,8 @@ const routes = [
   { path: "/usuario", component: UsuarioRegistro },
   { path: "/login", component: Login },
   { path: "/calendario/tipo", component: TipoCalendario },
+  { path: "/calendario/personal", component: CalendarioPersonal }, 
+  // /calendario/grupo se agregará en Sprint 5
 ];
 
 const router = createRouter({
@@ -17,24 +20,17 @@ const router = createRouter({
   routes,
 });
 
-// 🧠 Middleware ajustado (modo dev sin bloqueo)
+// 🔓 Modo libre para maquetar (sin login todavía)
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");
-
-  // 🔓 Permitir acceso libre durante el maquetado
-  // (empresa, usuario, calendario, login)
-  const publicPaths = ["/empresa", "/usuario", "/login", "/calendario/tipo"];
-
-  if (publicPaths.includes(to.path)) {
-    return next();
-  }
-
-  // 🔒 En el futuro, cuando haya login funcional:
-  if (to.path.startsWith("/calendario") && !token) {
-    return next("/login");
-  }
-
-  next();
+  const publicPaths = [
+    "/empresa",
+    "/usuario",
+    "/login",
+    "/calendario/tipo",
+    "/calendario/personal",
+  ];
+  if (publicPaths.includes(to.path)) return next();
+  next("/login");
 });
 
 export default router;

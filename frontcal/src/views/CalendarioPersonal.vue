@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import "@fullcalendar/core/vdom";
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -123,6 +122,7 @@ export default {
         area: e.area,
         color: e.color,
       });
+      this.eventosFiltrados = [...this.eventos];
       this.mostrarModal = false;
     },
     cerrarModal() {
@@ -131,3 +131,24 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #0d1b2a, #1b263b);
+  color: #fff;
+}
+
+.calendar-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem;
+  margin-top: 6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+</style>
