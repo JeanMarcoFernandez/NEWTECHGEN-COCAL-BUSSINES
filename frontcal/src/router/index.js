@@ -1,16 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../views/Login.vue';
-import Empresas from '../views/Empresas.vue';
-import Departamentos from '../views/Departamentos.vue';
-import Usuarios from '../views/Usuarios.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import EmpresaRegistro from "../views/EmpresaRegistro.vue";
+import UsuarioRegistro from "../views/UsuarioRegistro.vue";
+import TipoCalendario from "../views/TipoCalendario.vue"; // 🔥 próximo paso
 
-export default createRouter({
+const routes = [
+  { path: "/", redirect: "/empresa" },
+  { path: "/empresa", component: EmpresaRegistro },
+  { path: "/usuario", component: UsuarioRegistro },
+  { path: "/calendario/tipo", component: TipoCalendario },
+];
+
+const router = createRouter({
   history: createWebHistory(),
-  routes: [
-    { path:'/', redirect:'/empresas' },
-    { path:'/login', component: Login },
-    { path:'/empresas', component: Empresas },
-    { path:'/departamentos', component: Departamentos },
-    { path:'/usuarios', component: Usuarios }
-  ]
+  routes,
 });
+
+export default router;
