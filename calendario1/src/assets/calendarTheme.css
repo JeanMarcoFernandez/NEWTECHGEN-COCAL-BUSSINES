@@ -1,0 +1,7 @@
+.fc-toolbar-title {
+  font-size: 1.4rem !important;
+  color: #1b263b !important;
+}
+.fc-daygrid-day.fc-day-today {
+  background-color: rgba(0, 200, 255, 0.2) !important;
+}

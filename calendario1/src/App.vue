@@ -1,18 +1,8 @@
 <template>
-  <div class="container">
-    <Calendario />
-  </div>
+  <CalendarioPersonal />
 </template>
 
-<script setup>
-import Calendario from './views/Calendario.vue'
+<script>
+import CalendarioPersonal from "./views/CalendarioPersonal.vue";
+export default { components: { CalendarioPersonal } };
 </script>
-
-<style>
-.container {
-  font-family: 'Poppins', sans-serif;
-  padding: 2rem;
-  background-color: #f6f8fa;
-  min-height: 100vh;
-}
-</style>
