@@ -8,7 +8,6 @@ export async function registrarUsuario(req, res) {
   try {
     const { correo, contrasena, nombre, apellido, rol } = req.body;
 
-    // Verifica si ya existe
     const { data: existente } = await supabase
       .from('usuario')
       .select('*')
@@ -27,7 +26,7 @@ export async function registrarUsuario(req, res) {
 
     if (error) throw error;
 
-    res.status(201).json({ message: 'Usuario registrado correctamente ✅' });
+    res.status(201).json({ message: 'Usuario registrado correctamente' });
   } catch (err) {
     res.status(500).json({ message: 'Error al registrar usuario', error: err.message });
   }
