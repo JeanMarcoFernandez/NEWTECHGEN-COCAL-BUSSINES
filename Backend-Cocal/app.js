@@ -8,6 +8,7 @@ dotenv.config();
 import autenticacionRutas from './routes/authRoutes.js';
 import usuariosRutas from './routes/usuarios.js';
 import usuariosAdminRoutes from './routes/usuariosAdminRoutes.js';
+import cambiarContrasenaRoutes from './routes/cambiarContrasenaRoutes.js';
 import { configurarSwagger } from './swagger.js';
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(morgan('dev'));
 app.use('/api/auth', autenticacionRutas);
 app.use('/api/usuarios', usuariosRutas);
 app.use('/api/usuarios-admin', usuariosAdminRoutes);
+app.use('/api/contrasena', cambiarContrasenaRoutes);
 
 // Documentación Swagger
 configurarSwagger(app);
