@@ -2,6 +2,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../db.js';
 import dotenv from 'dotenv';
+import { registrarAuditoria } from '../services/auditoriaService.js';
+
+const MAX_INTENTOS = parseInt(process.env.MAX_INTENTOS || '5', 10);
+const BLOQUEO_MINUTOS = parseInt(process.env.BLOQUEO_MINUTOS || '15', 10);
+
 dotenv.config();
 
 
