@@ -6,7 +6,6 @@ import { validarRol } from '../middleware/validarRol.js';
 
 const router = Router();
 
-// Solo los ADMIN pueden acceder
 router.post('/crear', verificarToken, validarRol('ADMIN'), crearUsuarioPorAdmin);
 
 export default router;

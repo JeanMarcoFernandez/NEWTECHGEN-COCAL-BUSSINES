@@ -10,21 +10,23 @@ import usuariosRutas from './routes/usuarios.js';
 import usuariosAdminRoutes from './routes/usuariosAdminRoutes.js';
 import cambiarContrasenaRoutes from './routes/cambiarContrasenaRoutes.js';
 import { configurarSwagger } from './swagger.js';
-
+import seguridadRoutes from './routes/seguridadRoutes.js';
+import auditoriaRoutes from './routes/auditoriaRoutes.js';
 const app = express();
 
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
-
+app.set('trust proxy', 1);
 // Rutas principales
 app.use('/api/auth', autenticacionRutas);
 app.use('/api/usuarios', usuariosRutas);
 app.use('/api/usuarios-admin', usuariosAdminRoutes);
 app.use('/api/contrasena', cambiarContrasenaRoutes);
-
-// Documentación Swagger
+app.use('/api/seguridad', seguridadRoutes);
+app.use('/api/auditoria', auditoriaRoutes);
+//Swagger
 configurarSwagger(app);
 
 export default app;
