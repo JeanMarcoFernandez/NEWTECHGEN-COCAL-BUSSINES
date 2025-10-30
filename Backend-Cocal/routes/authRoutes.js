@@ -36,9 +36,15 @@ const router = Router();
  *               apellido:
  *                 type: string
  *                 example: Fernandez
+ *               cargo:
+ *                 type: string
+ *                 example: Gerente
  *               rol:
  *                 type: string
  *                 example: EMPLEADO
+ *               telefono:
+ *                 type: string
+ *                 example: "78123457"
  *     responses:
  *       201:
  *         description: Usuario registrado correctamente
