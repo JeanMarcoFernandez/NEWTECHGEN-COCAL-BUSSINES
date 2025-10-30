@@ -55,9 +55,9 @@ const router = Router();
  *                 type: string
  *                 enum: [ADMIN, CLIENTE]
  *                 example: "EMPLEADO"
- *               id_empresa:
- *                 type: integer
- *                 example: 1
+ *               telefono:
+ *                 type: string
+ *                 example: "78123457"
  *     responses:
  *       201:
  *         description: Usuario creado exitosamente
