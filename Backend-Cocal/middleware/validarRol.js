@@ -4,7 +4,7 @@ export function validarRol(...rolesPermitidos) {
     const { rol } = req.user;
     if (!rolesPermitidos.includes(rol)) {
       return res.status(403).json({
-        message: `Acceso denegado 🚫 — Rol requerido: ${rolesPermitidos.join(', ')}`,
+        message: `Acceso denegado — Rol requerido: ${rolesPermitidos.join(', ')}`,
       });
     }
     next();
