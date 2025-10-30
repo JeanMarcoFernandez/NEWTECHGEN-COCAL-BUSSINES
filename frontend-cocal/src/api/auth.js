@@ -1,11 +1,31 @@
+// src/api/auth.js
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:4000/api',
-});
+const API_URL = 'http://localhost:3000/api'; // Ajusta según tu backend
 
-export const login = (data) => api.post('/auth/login', data);
-export const register = (data) => api.post('/auth/register', data);
-export const resetPassword = (email) => api.post('/auth/reset-password', { email });
+// --- LOGIN ---
+export const login = async (credentials) => {
+  return await axios.post(`${API_URL}/auth/login`, credentials);
+};
 
-export default api;
+// --- REGISTER ---
+export const register = async (userData) => {
+  return await axios.post(`${API_URL}/auth/register`, userData);
+};
+
+// --- RESET PASSWORD (envía enlace) ---
+export const resetPassword = async (email) => {
+  return await axios.post(`${API_URL}/auth/reset-password`, { email });
+};
+
+// --- CHANGE PASSWORD (usuario cambia su contraseña) ---
+export const changePassword = async (data, token) => {
+  // data = { oldPassword, newPassword }
+  return await axios.put(
+    `${API_URL}/auth/change-password`,
+    data,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+};
