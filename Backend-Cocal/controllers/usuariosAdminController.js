@@ -1,6 +1,7 @@
 // controllers/usuariosAdminController.js
 import bcrypt from 'bcrypt';
-import { supabase } from '../config/supabaseClient.js';
+import { supabase } from '../db.js';
+
 
 
 export async function crearUsuarioPorAdmin(req, res) {

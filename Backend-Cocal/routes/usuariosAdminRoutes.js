@@ -9,19 +9,6 @@ const router = Router();
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 router.post('/crear', verificarToken, validarRol('ADMIN'), crearUsuarioPorAdmin);
 
 export default router;
