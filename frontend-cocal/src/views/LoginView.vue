@@ -102,12 +102,27 @@ const handleLogin = async () => {
   if (Object.keys(errores.value).length > 0) return;
 
   try {
-    const { data } = await login({ email: email.value, password: password.value });
+    const { data } = await login({ correo: email.value, contrasena: password.value });
+
+    
+    if (data.requiere2FA) {
+      router.push({
+        path: '/verificar-2fa',
+        query: {
+          correo: data.usuario.correo,
+          usuario_id: data.usuario.id,
+          nombre: data.usuario.nombre,
+        },
+      });
+      return;
+    }
+
+    
     localStorage.setItem('token', data.token);
-    router.push('/paginaprincipal');
+    router.push('/pagina-principal');
   } catch (err) {
     const response = err.response?.data;
-    errores.value.login = response?.message || 'Error al iniciar sesión ❌';
+    errores.value.login = response?.message || 'Error al iniciar sesión ';
     if (response?.intentos_restantes !== undefined) {
       intentosRestantes.value = response.intentos_restantes;
     }
@@ -116,6 +131,7 @@ const handleLogin = async () => {
     }
   }
 };
+
 </script>
 
 <style scoped>

@@ -12,6 +12,7 @@ import cambiarContrasenaRoutes from './routes/cambiarContrasenaRoutes.js';
 import { configurarSwagger } from './swagger.js';
 import seguridadRoutes from './routes/seguridadRoutes.js';
 import auditoriaRoutes from './routes/auditoriaRoutes.js';
+import twoFactorRoutes from "./routes/twoFactorRoutes.js";
 const app = express();
 
 app.use(cors());
@@ -26,6 +27,7 @@ app.use('/api/usuarios-admin', usuariosAdminRoutes);
 app.use('/api/contrasena', cambiarContrasenaRoutes);
 app.use('/api/seguridad', seguridadRoutes);
 app.use('/api/auditoria', auditoriaRoutes);
+app.use("/api/auth", twoFactorRoutes);
 //Swagger
 configurarSwagger(app);
 

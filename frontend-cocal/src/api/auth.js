@@ -39,3 +39,11 @@ export const changePassword = async (data, token) => {
     }
   );
 };
+
+export async function verificar2FA(correo, codigo) {
+  return await axios.post(`${API_URL}/verificar-2fa`, { correo, codigo });
+}
+
+export async function reenviar2FA(usuario_id, correo, nombre) {
+  return await axios.post(`${API_URL}/enviar-2fa`, { usuario_id, correo, nombre });
+}
