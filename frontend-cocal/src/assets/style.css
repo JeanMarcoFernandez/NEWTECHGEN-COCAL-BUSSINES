@@ -1,0 +1,139 @@
+/* 🎨 Paleta general */
+:root {
+  --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --text-color: #222;
+  --primary-color: #4f46e5; /* Indigo */
+  --primary-hover: #4338ca;
+  --success-color: #16a34a;
+  --danger-color: #dc2626;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --radius: 14px;
+  --transition: all 0.25s ease-in-out;
+}
+
+/* 🖥️ Fondo general */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text-color);
+  transition: background 0.5s ease;
+}
+
+/* 🪟 Tarjetas (login, registro, etc.) */
+.container {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+  width: 100%;
+  max-width: 380px;
+  animation: fadeIn 0.7s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 1.2rem;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* 🧩 Inputs */
+input {
+  width: 100%;
+  padding: 10px 14px;
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  background: #f9fafb;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* 🪄 Etiquetas */
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+/* 🔘 Botones */
+button {
+  width: 100%;
+  padding: 10px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+}
+
+/* 🌀 Enlaces */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+/* 📱 Responsive */
+@media (max-width: 480px) {
+  .container {
+    max-width: 90%;
+    padding: 1.8rem;
+  }
+  h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* ✨ Toques finales */
+input, button {
+  font-family: inherit;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
