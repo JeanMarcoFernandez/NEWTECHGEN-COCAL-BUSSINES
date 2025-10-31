@@ -120,6 +120,7 @@ const handleLogin = async () => {
     
     localStorage.setItem('token', data.token)
     localStorage.setItem('usuario', JSON.stringify(data.usuario))
+    
     const payload = JSON.parse(atob(data.token.split('.')[1]))
 console.log('JWT decodificado:', payload)
 
