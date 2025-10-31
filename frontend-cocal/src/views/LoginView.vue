@@ -8,13 +8,13 @@
         <div>
           <label class="block text-gray-700 font-medium mb-1">Correo electrónico</label>
           <input
-            v-model="email"
+            v-model="correo"
             type="email"
             placeholder="usuario@correo.com"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
-            :class="{ 'border-red-500': errores.email }"
+            :class="{ 'border-red-500': errores.correo }"
           />
-          <p v-if="errores.email" class="error-text">{{ errores.email }}</p>
+          <p v-if="errores.correo" class="error-text">{{ errores.correo }}</p>
         </div>
 
         <!-- CONTRASEÑA -->
@@ -39,12 +39,12 @@
 
           <input
             :type="mostrarPassword ? 'text' : 'password'"
-            v-model="password"
+            v-model="contrasena"
             placeholder="********"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
-            :class="{ 'border-red-500': errores.password }"
+            :class="{ 'border-red-500': errores.contrasena }"
           />
-          <p v-if="errores.password" class="error-text">{{ errores.password }}</p>
+          <p v-if="errores.contrasena" class="error-text">{{ errores.contrasena }}</p>
         </div>
 
         <!-- MENSAJE DE LOGIN -->
@@ -75,63 +75,62 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { login } from '../api/auth';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '../api/auth'
 
-const router = useRouter();
+const router = useRouter()
 
-const email = ref('');
-const password = ref('');
-const errores = ref({});
-const mostrarPassword = ref(false);
-const intentosRestantes = ref(null);
-const bloqueadoHasta = ref(null);
+const correo = ref('')
+const contrasena = ref('')
+const errores = ref({})
+const mostrarPassword = ref(false)
+const intentosRestantes = ref(null)
+const bloqueadoHasta = ref(null)
 
 const togglePassword = () => {
-  mostrarPassword.value = !mostrarPassword.value;
-};
+  mostrarPassword.value = !mostrarPassword.value
+}
 
 const handleLogin = async () => {
-  errores.value = {};
-  intentosRestantes.value = null;
-  bloqueadoHasta.value = null;
+  errores.value = {}
+  intentosRestantes.value = null
+  bloqueadoHasta.value = null
 
-  if (!email.value) errores.value.email = 'El correo es obligatorio';
-  if (!password.value) errores.value.password = 'La contraseña es obligatoria';
-  if (Object.keys(errores.value).length > 0) return;
+  if (!correo.value) errores.value.correo = 'El correo es obligatorio'
+  if (!contrasena.value) errores.value.contrasena = 'La contraseña es obligatoria'
+  if (Object.keys(errores.value).length > 0) return
 
   try {
-    const { data } = await login({ correo: email.value, contrasena: password.value });
+    const { data } = await login({ correo: correo.value, contrasena: contrasena.value })
 
-    
+    // 🔹 Si requiere 2FA → redirigir con los datos
     if (data.requiere2FA) {
       router.push({
         path: '/verificar-2fa',
         query: {
-          correo: data.usuario.correo,
-          usuario_id: data.usuario.id,
-          nombre: data.usuario.nombre,
-        },
-      });
-      return;
+          correo: data.correo,
+          usuario_id: data.usuario_id,
+          nombre: data.nombre
+        }
+      })
+      return
     }
 
-    
-    localStorage.setItem('token', data.token);
-    router.push('/pagina-principal');
+    // 🔹 Si no requiere 2FA → guardar token normal
+    localStorage.setItem('token', data.token)
+    router.push('/pagina-principal')
   } catch (err) {
-    const response = err.response?.data;
-    errores.value.login = response?.message || 'Error al iniciar sesión ';
+    const response = err.response?.data
+    errores.value.login = response?.message || 'Error al iniciar sesión ❌'
     if (response?.intentos_restantes !== undefined) {
-      intentosRestantes.value = response.intentos_restantes;
+      intentosRestantes.value = response.intentos_restantes
     }
     if (response?.bloqueado_hasta) {
-      bloqueadoHasta.value = new Date(response.bloqueado_hasta).toLocaleString();
+      bloqueadoHasta.value = new Date(response.bloqueado_hasta).toLocaleString()
     }
   }
-};
-
+}
 </script>
 
 <style scoped>
