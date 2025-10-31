@@ -8,13 +8,13 @@
         <div>
           <label class="block text-gray-700 font-medium mb-1">Correo electrónico</label>
           <input
-            v-model="email"
+            v-model="correo"
             type="email"
             placeholder="usuario@correo.com"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
-            :class="{ 'border-red-500': errores.email }"
+            :class="{ 'border-red-500': errores.correo }"
           />
-          <p v-if="errores.email" class="error-text">{{ errores.email }}</p>
+          <p v-if="errores.correo" class="error-text">{{ errores.correo }}</p>
         </div>
 
         <!-- CONTRASEÑA -->
@@ -32,12 +32,12 @@
 
           <input
             :type="mostrarPassword ? 'text' : 'password'"
-            v-model="password"
+            v-model="contrasena"
             placeholder="********"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
-            :class="{ 'border-red-500': errores.password }"
+            :class="{ 'border-red-500': errores.contrasena }"
           />
-          <p v-if="errores.password" class="error-text">{{ errores.password }}</p>
+          <p v-if="errores.contrasena" class="error-text">{{ errores.contrasena }}</p>
         </div>
 
         <!-- MENSAJES DE ERROR / BLOQUEO -->
@@ -58,18 +58,21 @@
       <div class="text-center mt-4 text-sm">
         <router-link to="/register" class="text-blue-600 hover:underline">Crear cuenta</router-link>
         <br />
-        <router-link to="/reset" class="text-gray-500 hover:underline">¿Olvidaste tu contraseña?</router-link>
+      <router-link to="/reset-password" class="text-gray-500 hover:underline">
+  ¿Olvidaste tu contraseña?
+</router-link>
+
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { login } from '../api/auth';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { login } from '../api/auth'
 
-const router = useRouter();
+const router = useRouter()
 
 const email = ref('');
 const password = ref('');
@@ -79,17 +82,17 @@ const mensaje = ref('');
 const intentosRestantes = ref(null);
 
 const togglePassword = () => {
-  mostrarPassword.value = !mostrarPassword.value;
-};
+  mostrarPassword.value = !mostrarPassword.value
+}
 
 const handleLogin = async () => {
   errores.value = {};
   mensaje.value = '';
   intentosRestantes.value = null;
 
-  if (!email.value) errores.value.email = 'El correo es obligatorio';
-  if (!password.value) errores.value.password = 'La contraseña es obligatoria';
-  if (Object.keys(errores.value).length > 0) return;
+  if (!correo.value) errores.value.correo = 'El correo es obligatorio'
+  if (!contrasena.value) errores.value.contrasena = 'La contraseña es obligatoria'
+  if (Object.keys(errores.value).length > 0) return
 
   try {
     const response = await login({ email: email.value, password: password.value });

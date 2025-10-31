@@ -7,7 +7,7 @@ const router = Router();
  * @swagger
  * tags:
  *   name: Autenticación
- *   description: Endpoints para registro e inicio de sesión de usuarios.
+ *   description: Endpoints para registro, inicio de sesión y autenticación en dos pasos.
  */
 
 /**
@@ -15,7 +15,7 @@ const router = Router();
  * /api/auth/register:
  *   post:
  *     summary: Registro de nuevo usuario
- *     description: Crea un nuevo usuario en el sistema con su contraseña cifrada mediante bcrypt. Solo para usuarios normales, no administradores.
+ *     description: Crea un nuevo usuario en el sistema con su contraseña cifrada mediante bcrypt.
  *     tags: [Autenticación]
  *     requestBody:
  *       required: true
@@ -47,7 +47,7 @@ const router = Router();
  *                 example: "Gerente"
  *               rol:
  *                 type: string
- *                 enum: [ADMIN, CLIENTE]
+ *                 enum: [ADMIN, EMPLEADO]
  *                 example: "EMPLEADO"
  *               telefono:
  *                 type: string
@@ -79,8 +79,10 @@ router.post('/register', registrarUsuario);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Inicio de sesión de usuario
- *     description: Valida las credenciales del usuario. Si las credenciales son correctas, genera un token JWT. Incluye protección contra ataques de fuerza bruta y bloqueo temporal.
+ *     summary: Inicio de sesión de usuario (Etapa 1 de 2FA)
+ *     description: 
+ *       Valida las credenciales del usuario y, si son correctas, envía un código 2FA al correo electrónico.
+ *       El token JWT **no se genera aún** hasta que el código sea verificado.
  *     tags: [Autenticación]
  *     requestBody:
  *       required: true
@@ -101,24 +103,15 @@ router.post('/register', registrarUsuario);
  *                 example: "Password123!"
  *     responses:
  *       200:
- *         description: Inicio de sesión exitoso o aviso de cambio de contraseña obligatorio
+ *         description: Credenciales válidas y código 2FA enviado al correo
  *         content:
  *           application/json:
- *             examples:
- *               loginExitoso:
- *                 summary: Sesión iniciada correctamente
- *                 value:
- *                   message: "Inicio de sesión exitoso"
- *                   token: "JWT_GENERADO_AQUI"
- *                   usuario:
- *                     id: 5
- *                     nombre: "Jean"
- *                     rol: "EMPLEADO"
- *               primerLogin:
- *                 summary: Primer inicio de sesión, requiere cambio de contraseña
- *                 value:
- *                   message: "Debe cambiar su contraseña antes de continuar."
- *                   requerirCambio: true
+ *             example:
+ *               message: "Inicio de sesión correcto. Código 2FA enviado al correo."
+ *               requiere2FA: true
+ *               correo: "usuario@correo.com"
+ *               usuario_id: 12
+ *               nombre: "Jean"
  *       400:
  *         description: Credenciales inválidas
  *         content:

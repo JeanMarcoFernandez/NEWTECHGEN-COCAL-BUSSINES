@@ -9,12 +9,12 @@ import {
   resetearIntentos,
   getUsuarioPorCorreo,
 } from '../services/authAttemptsService.js';
+import { enviarCodigo2FA } from './twoFactorController.js'; // 🔸 Import directo
 
 dotenv.config();
 
 const MAX_INTENTOS = parseInt(process.env.MAX_INTENTOS || '5', 10);
 const BLOQUEO_MINUTOS = parseInt(process.env.BLOQUEO_MINUTOS || '15', 10);
-
 
 export async function registrarUsuario(req, res) {
   try {
@@ -32,28 +32,24 @@ export async function registrarUsuario(req, res) {
 
     const hash = await bcrypt.hash(contrasena, 10);
 
-    const { error } = await supabase.from('usuario').insert([
-      {
-        correo,
-        contrasena: hash,
-        nombre,
-        apellido,
-        cargo,
-        rol: rol || 'EMPLEADO',
-        telefono,
-        primer_login: false,
-        creado_por: null,
-      },
-    ]);
+    const { error } = await supabase.from('usuario').insert([{
+      correo,
+      contrasena: hash,
+      nombre,
+      apellido,
+      cargo,
+      rol: rol || 'EMPLEADO',
+      telefono,
+      primer_login: false,
+      creado_por: null,
+    }]);
 
     if (error) throw error;
-
     res.status(201).json({ message: 'Usuario registrado correctamente' });
   } catch (err) {
     res.status(500).json({ message: 'Error al registrar usuario', error: err.message });
   }
 }
-
 
 export async function loginUsuario(req, res) {
   const ip = getClientIp(req);
@@ -61,9 +57,8 @@ export async function loginUsuario(req, res) {
 
   try {
     const { correo, contrasena } = req.body;
-    if (!correo || !contrasena) {
+    if (!correo || !contrasena)
       return res.status(400).json({ message: 'Correo y contraseña son requeridos.' });
-    }
 
     const { data: user, error } = await getUsuarioPorCorreo(correo);
     if (error || !user) {
@@ -77,7 +72,6 @@ export async function loginUsuario(req, res) {
       return res.status(400).json({ message: 'Credenciales inválidas.' });
     }
 
-    
     if (user.bloqueado_hasta && new Date(user.bloqueado_hasta) > new Date()) {
       await registrarAuditoria({
         usuario_id: user.id,
@@ -92,14 +86,12 @@ export async function loginUsuario(req, res) {
       });
     }
 
-    
     const esValido = await bcrypt.compare(contrasena, user.contrasena);
     if (!esValido) {
       const nuevosIntentos = (user.intentos_fallidos || 0) + 1;
       let bloqueo = null;
-      if (nuevosIntentos >= MAX_INTENTOS) {
+      if (nuevosIntentos >= MAX_INTENTOS)
         bloqueo = new Date(Date.now() + BLOQUEO_MINUTOS * 60000);
-      }
 
       await incrementarIntentoFallido(user.id, nuevosIntentos, bloqueo);
       await registrarAuditoria({
@@ -119,20 +111,17 @@ export async function loginUsuario(req, res) {
       });
     }
 
-   
     await resetearIntentos(user.id);
 
-    
     await registrarAuditoria({
       usuario_id: user.id,
       correo,
       exito: true,
-      motivo: 'LOGIN_EXITOSO',
+      motivo: 'LOGIN_EXITOSO - ENVIAR_2FA',
       ip,
       user_agent: userAgent,
     });
 
-   
     if (user.primer_login && user.creado_por !== null) {
       return res.status(200).json({
         message: 'Debe cambiar su contraseña antes de continuar.',
@@ -140,18 +129,17 @@ export async function loginUsuario(req, res) {
       });
     }
 
-    
-    const token = generarToken({ id: user.id, rol: user.rol });
+    // 🔐 Enviar código 2FA automáticamente (reutilizando tu controlador)
+    await enviarCodigo2FA(user.id, user.correo, user.nombre);
 
-    res.status(200).json({
-      message: 'Inicio de sesión exitoso',
-      token,
-      usuario: {
-        id: user.id,
-        nombre: user.nombre,
-        rol: user.rol,
-      },
+    return res.status(200).json({
+      message: 'Inicio de sesión correcto. Código 2FA enviado al correo.',
+      requiere2FA: true,
+      correo: user.correo,
+      usuario_id: user.id,
+      nombre: user.nombre,
     });
+
   } catch (err) {
     console.error('Error en loginUsuario:', err.message);
     res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });

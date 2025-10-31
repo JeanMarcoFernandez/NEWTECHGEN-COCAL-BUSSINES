@@ -1,0 +1,32 @@
+.
+|-- README.md
+|-- estructura.txt
+|-- index.html
+|-- package-lock.json
+|-- package.json
+|-- public
+|   `-- vite.svg
+|-- src
+|   |-- App.vue
+|   |-- api
+|   |   |-- admin.js
+|   |   `-- auth.js
+|   |-- assets
+|   |   |-- style.css
+|   |   `-- vue.svg
+|   |-- components
+|   |   `-- MiInput.vue
+|   |-- main.js
+|   |-- router
+|   |   `-- index.js
+|   |-- style.css
+|   `-- views
+|       |-- LoginView.vue
+|       |-- PaginaPrincipal.vue
+|       |-- RegisterView.vue
+|       |-- changePasswordView.vue
+|       |-- createUserView.vue
+|       `-- resetPasswordView.vue
+`-- vite.config.js
+
+7 directories, 22 files
