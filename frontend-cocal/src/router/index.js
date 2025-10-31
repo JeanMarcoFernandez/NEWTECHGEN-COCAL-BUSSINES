@@ -7,17 +7,20 @@ import createUserView from '../views/createUserView.vue';
 import Verificar2FA from '../views/Verificar2FA.vue'; 
 import PaginaPrincipal from '../views/PaginaPrincipal.vue'; 
 import RestablecerPasswordView from '../views/RestablecerPasswordView.vue';
+
+
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/reset-password', component: resetPasswordView },
-  { path: '/change-password/:token', component: changePasswordView, props: true },
+  { path: '/password/primer-login', component: changePasswordView, props: true },
   { path: '/create-user', component: createUserView },
   { path: '/verificar-2fa', component: Verificar2FA },
   { path: '/pagina-principal', component: PaginaPrincipal, meta: { requiresAuth: true } },
   { path: '/restablecer/:token', component: RestablecerPasswordView, props: true },
 
+ 
 ];
 
 const router = createRouter({
