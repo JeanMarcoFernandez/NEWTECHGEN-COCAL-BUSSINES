@@ -113,7 +113,7 @@ export async function loginUsuario(req, res) {
 
     await resetearIntentos(user.id);
 
-    await verificarCambioIP(user, ip);
+    await verificarCambioIP(user, ip, userAgent);
 
     await registrarAuditoria({
       usuario_id: user.id,
