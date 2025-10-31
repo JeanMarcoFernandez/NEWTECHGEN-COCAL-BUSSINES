@@ -17,10 +17,20 @@
       <form @submit.prevent="handleChange" class="space-y-4">
         <!-- NUEVA CONTRASEÑA -->
         <div>
-          <label class="block text-gray-700 font-medium mb-1">Nueva contraseña</label>
+          <label class="flex items-center justify-between text-gray-700 font-medium mb-1">
+            <span>Nueva contraseña</span>
+            <button
+              type="button"
+              @click="mostrarNueva = !mostrarNueva"
+              class="text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              {{ mostrarNueva ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </label>
+
           <input
+            :type="mostrarNueva ? 'text' : 'password'"
             v-model="nuevaContrasena"
-            type="password"
             placeholder="********"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
             :class="{ 'border-red-500': errores.nuevaContrasena }"
@@ -32,10 +42,20 @@
 
         <!-- CONFIRMAR CONTRASEÑA -->
         <div>
-          <label class="block text-gray-700 font-medium mb-1">Confirmar contraseña</label>
+          <label class="flex items-center justify-between text-gray-700 font-medium mb-1">
+            <span>Confirmar contraseña</span>
+            <button
+              type="button"
+              @click="mostrarConfirmar = !mostrarConfirmar"
+              class="text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              {{ mostrarConfirmar ? 'Ocultar' : 'Mostrar' }}
+            </button>
+          </label>
+
           <input
+            :type="mostrarConfirmar ? 'text' : 'password'"
             v-model="confirmarContrasena"
-            type="password"
             placeholder="********"
             class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200"
             :class="{ 'border-red-500': errores.confirmarContrasena }"
@@ -62,53 +82,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { changePasswordFirstLogin } from '../api/auth.js';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { changePasswordFirstLogin } from '../api/auth.js'
 
-const router = useRouter();
+const router = useRouter()
 
-const nuevaContrasena = ref('');
-const confirmarContrasena = ref('');
-const errores = ref({});
-const mensaje = ref('');
-const correo = ref('');
+const nuevaContrasena = ref('')
+const confirmarContrasena = ref('')
+const errores = ref({})
+const mensaje = ref('')
+const correo = ref('')
+const mostrarNueva = ref(false)
+const mostrarConfirmar = ref(false)
 
 onMounted(() => {
   // 🔹 Recuperar el correo guardado por el LoginView
-  correo.value = localStorage.getItem('correo_cambio') || '';
-});
+  correo.value = localStorage.getItem('correo_cambio') || ''
+})
 
 const handleChange = async () => {
-  errores.value = {};
+  errores.value = {}
 
-  if (!nuevaContrasena.value) errores.value.nuevaContrasena = 'La contraseña es obligatoria';
-  if (!confirmarContrasena.value) errores.value.confirmarContrasena = 'Confirma tu contraseña';
+  // 🔍 Validaciones
+  if (!nuevaContrasena.value) errores.value.nuevaContrasena = 'La contraseña es obligatoria'
+  if (!confirmarContrasena.value) errores.value.confirmarContrasena = 'Confirma tu contraseña'
+  if (nuevaContrasena.value && nuevaContrasena.value.length < 6)
+    errores.value.nuevaContrasena = 'Debe tener al menos 6 caracteres'
   if (nuevaContrasena.value !== confirmarContrasena.value)
-    errores.value.confirmarContrasena = 'Las contraseñas no coinciden';
+    errores.value.confirmarContrasena = 'Las contraseñas no coinciden'
 
   if (!correo.value) {
-    alert('Error: No se encontró el correo del usuario. Vuelve a iniciar sesión.');
-    router.push('/login');
-    return;
+    alert('Error: No se encontró el correo del usuario. Vuelve a iniciar sesión.')
+    router.push('/login')
+    return
   }
 
-  if (Object.keys(errores.value).length > 0) return;
+  if (Object.keys(errores.value).length > 0) return
 
   try {
-    const { data } = await changePasswordFirstLogin(correo.value, nuevaContrasena.value);
-    alert(data.message || 'Contraseña cambiada exitosamente ✅');
+    console.log('📦 Enviando:', { correo: correo.value, nuevaContrasena: nuevaContrasena.value })
+    const { data } = await changePasswordFirstLogin(correo.value, nuevaContrasena.value)
+    alert(data.message || 'Contraseña cambiada exitosamente ✅')
 
     // limpiar datos y redirigir
-    localStorage.removeItem('correo_cambio');
-    nuevaContrasena.value = '';
-    confirmarContrasena.value = '';
-    router.push('/login');
+    localStorage.removeItem('correo_cambio')
+    nuevaContrasena.value = ''
+    confirmarContrasena.value = ''
+    router.push('/login')
   } catch (err) {
-    const msg = err.response?.data?.message || 'Error al cambiar la contraseña ❌';
-    alert(msg);
+    console.error('❌ Error al cambiar contraseña:', err.response?.data || err)
+    const msg = err.response?.data?.message || 'Error al cambiar la contraseña ❌'
+    mensaje.value = msg
   }
-};
+}
 </script>
 
 <style scoped>

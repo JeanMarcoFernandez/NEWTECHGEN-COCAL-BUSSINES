@@ -40,13 +40,13 @@
           <p v-if="errores.contrasena" class="error-text">{{ errores.contrasena }}</p>
         </div>
 
-        <!-- MENSAJES DE ERROR / BLOQUEO -->
+        <!-- MENSAJES -->
         <p v-if="mensaje" class="text-sm text-center mt-2 text-gray-700">{{ mensaje }}</p>
         <p v-if="intentosRestantes !== null" class="text-sm text-center text-red-500">
           Intentos restantes: {{ intentosRestantes }}
         </p>
 
-        <!-- BOTÓN DE ENTRAR -->
+        <!-- BOTÓN -->
         <button
           type="submit"
           class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg mt-2 hover:bg-blue-700 transition duration-200 shadow-sm"
@@ -55,13 +55,11 @@
         </button>
       </form>
 
+      <!-- LINKS -->
       <div class="text-center mt-4 text-sm">
         <router-link to="/register" class="text-blue-600 hover:underline">Crear cuenta</router-link>
         <br />
-      <router-link to="/reset-password" class="text-gray-500 hover:underline">
-  ¿Olvidaste tu contraseña?
-</router-link>
-
+        <router-link to="/reset-password" class="text-gray-500 hover:underline">¿Olvidaste tu contraseña?</router-link>
       </div>
     </div>
   </div>
@@ -90,6 +88,7 @@ const handleLogin = async () => {
   mensaje.value = ''
   intentosRestantes.value = null
 
+  // Validaciones básicas
   if (!correo.value) errores.value.correo = 'El correo es obligatorio'
   if (!contrasena.value) errores.value.contrasena = 'La contraseña es obligatoria'
   if (Object.keys(errores.value).length > 0) return
@@ -97,7 +96,7 @@ const handleLogin = async () => {
   try {
     const { data } = await login({ correo: correo.value, contrasena: contrasena.value })
 
-    // 🔹 SI REQUIERE 2FA
+    // 🔹 Caso: requiere 2FA
     if (data.requiere2FA) {
       router.push({
         path: '/verificar-2fa',
@@ -110,26 +109,43 @@ const handleLogin = async () => {
       return
     }
 
-    // 🔹 SI NO REQUIERE 2FA
+    // 🔹 Caso: primer login (debe cambiar contraseña)
+    if (data.requerirCambio) {
+      alert('Debe cambiar su contraseña antes de continuar 🔒')
+      localStorage.setItem('correo_cambio', correo.value)
+      router.push('/password/primer-login')
+      return
+    }
+
+    // 🔹 Caso: login normal
     localStorage.setItem('token', data.token)
     localStorage.setItem('usuario', JSON.stringify(data.usuario))
+    alert('Inicio de sesión exitoso ✅')
     router.push('/pagina-principal')
 
   } catch (err) {
     const res = err.response?.data
+    console.error('Error al iniciar sesión:', res || err)
+
+    // Mensajes de error
     mensaje.value = res?.message || 'Error al iniciar sesión ❌'
 
     if (res?.intentos_restantes !== undefined) {
       intentosRestantes.value = res.intentos_restantes
     }
 
+    // Bloqueo
     if (res?.bloqueado_hasta) {
       mensaje.value = `Cuenta bloqueada hasta ${new Date(res.bloqueado_hasta).toLocaleString()}`
+    }
+
+    // Alerta adicional
+    if (res?.message?.includes('bloqueada')) {
+      alert('⚠️ Tu cuenta está bloqueada temporalmente.')
     }
   }
 }
 </script>
-
 
 <style scoped>
 .error-text {
