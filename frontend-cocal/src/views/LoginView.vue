@@ -119,6 +119,7 @@ const handleLogin = async () => {
 
     
     localStorage.setItem('token', data.token)
+    localStorage.setItem('rol', data.usuario.rol)
     localStorage.setItem('usuario', JSON.stringify(data.usuario))
     
     const payload = JSON.parse(atob(data.token.split('.')[1]))
