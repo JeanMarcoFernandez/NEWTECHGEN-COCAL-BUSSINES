@@ -9,7 +9,8 @@ import {
   resetearIntentos,
   getUsuarioPorCorreo,
 } from '../services/authAttemptsService.js';
-import { enviarCodigo2FA } from './twoFactorController.js'; // 🔸 Import directo
+import { enviarCodigo2FA } from './twoFactorController.js';
+import { verificarCambioIP } from '../services/ipCheckService.js';
 
 dotenv.config();
 
@@ -112,6 +113,8 @@ export async function loginUsuario(req, res) {
     }
 
     await resetearIntentos(user.id);
+
+    await verificarCambioIP(user, ip);
 
     await registrarAuditoria({
       usuario_id: user.id,
