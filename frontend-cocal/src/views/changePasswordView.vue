@@ -97,7 +97,7 @@ const mostrarNueva = ref(false)
 const mostrarConfirmar = ref(false)
 
 onMounted(() => {
-  // 🔹 Recuperar el correo guardado por el LoginView
+  
   correo.value = localStorage.getItem('correo_cambio') || ''
 })
 
@@ -121,9 +121,9 @@ const handleChange = async () => {
   if (Object.keys(errores.value).length > 0) return
 
   try {
-    console.log('📦 Enviando:', { correo: correo.value, nuevaContrasena: nuevaContrasena.value })
+    console.log(' Enviando:', { correo: correo.value, nuevaContrasena: nuevaContrasena.value })
     const { data } = await changePasswordFirstLogin(correo.value, nuevaContrasena.value)
-    alert(data.message || 'Contraseña cambiada exitosamente ✅')
+    alert(data.message || 'Contraseña cambiada exitosamente ')
 
     // limpiar datos y redirigir
     localStorage.removeItem('correo_cambio')
@@ -131,8 +131,8 @@ const handleChange = async () => {
     confirmarContrasena.value = ''
     router.push('/login')
   } catch (err) {
-    console.error('❌ Error al cambiar contraseña:', err.response?.data || err)
-    const msg = err.response?.data?.message || 'Error al cambiar la contraseña ❌'
+    console.error(' Error al cambiar contraseña:', err.response?.data || err)
+    const msg = err.response?.data?.message || 'Error al cambiar la contraseña '
     mensaje.value = msg
   }
 }

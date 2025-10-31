@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { refreshToken } from '../controllers/authRefreshController.js';
 import { registrarUsuario, loginUsuario } from '../controllers/authController.js';
 
 const router = Router();
@@ -148,4 +149,5 @@ router.post('/register', registrarUsuario);
  */
 router.post('/login', loginUsuario);
 
+router.post('/refresh', refreshToken);
 export default router;

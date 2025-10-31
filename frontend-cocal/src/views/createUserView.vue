@@ -141,7 +141,7 @@ const handleSubmit = async () => {
 
     await createUser(nuevoUsuario);
 
-    alert('Usuario creado correctamente ✅');
+    alert('Usuario creado correctamente ');
 
     // Limpiar campos
     correo.value = '';
