@@ -39,7 +39,7 @@ export async function registrarUsuario(req, res) {
       nombre,
       apellido,
       cargo,
-      rol: rol || 'EMPLEADO',
+      rol: rol || 'ADMIN',
       telefono,
       primer_login: false,
       creado_por: null,

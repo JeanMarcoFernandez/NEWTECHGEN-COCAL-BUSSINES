@@ -6,6 +6,7 @@ import ForgotPassword from '@/components/ForgotPassword.vue'
 import ResetPassword from '@/components/ResetPassword.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
 import Verify2FA from '@/components/Verify2FA.vue'
+import CreateUser from '@/components/CreateUser.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +47,11 @@ const router = createRouter({
       name: 'ResetPassword',
       component: ResetPassword,
       props: true
+    },
+    {
+      path: '/create-user',
+      name: 'CreateUser',
+      component: CreateUser
     },
   ],
 })
