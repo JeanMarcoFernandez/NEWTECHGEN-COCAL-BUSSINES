@@ -119,6 +119,7 @@ const handleLogin = async () => {
 
     // 🔹 Caso: login normal
     localStorage.setItem('token', data.token)
+    localStorage.setItem('rol', data.usuario.rol)
     localStorage.setItem('usuario', JSON.stringify(data.usuario))
     alert('Inicio de sesión exitoso ✅')
     router.push('/pagina-principal')

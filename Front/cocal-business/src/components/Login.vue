@@ -1,54 +1,90 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
-// import axios from 'axios'
+import { ref } from 'vue'
+import { login } from '../api/auth'
+
+const router = useRouter()
 
 const showPassword = ref(false);
 const correo = ref('')
-const contraseña = ref('')
+const contrasena = ref('')
 const error = ref('')
+const message = ref('')
+const remainingAttempts = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
+const snackbarError = ref(false);
 
 const loginForm = ref()
 
-const login = async () => {
-    snackbar.value = true
-    registerForm.value.reset()
-//   error.value = ''
-//   loading.value = true
-  
-//   try {
-//     const res = await axios.post('http://localhost:3000/api/usuarios/login', {
-//       correo: correo.value,
-//       contraseña: contraseña.value
-//     })
+const handleLogin = async () => {
+    snackbar.value = false
+    snackbarError.value = false
+    error.value = ''
+    message.value = ''
+    remainingAttempts.value = null
+    loading.value = true
 
-//     const token = res.data.token
-//     localStorage.setItem('token', token)
+    try {
+      const { data } = await login({ correo: correo.value, contrasena: contrasena.value })
 
-//     showSnackbar.value = true
-//     setTimeout(() => {
-//       location.reload()
-//     }, 1000)
-//   } catch (err) {
-//     if (err.response.status === 401) {
-//       error.value = 'Credenciales inválidas'
-//     } else {
-//       error.value = 'Usuario no encontrado'
-//     }
-//   } finally {
-//     loading.value = false 
-//   }
+      // 🔹 Caso: requiere 2FA
+      if (data.requiere2FA) {
+        router.push({
+          path: '/verify-2fa',
+          query: {
+            correo: data.correo,
+            usuario_id: data.usuario_id,
+            nombre: data.nombre
+          }
+        })
+        return
+      }
+
+      // 🔹 Caso: primer login (debe cambiar contraseña)
+      if (data.requerirCambio) {
+        alert('Debe cambiar su contraseña antes de continuar 🔒')
+        localStorage.setItem('correo_cambio', correo.value)
+        router.push('/password/first-login')
+        return
+      }
+
+      // 🔹 Caso: login normal
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('usuario', JSON.stringify(data.usuario))
+      message.value = 'Inicio de sesión exitoso.'
+      snackbar.value = true
+      router.push('/')
+
+    } catch (err) {
+      const res = err.response?.data
+      console.error('Error al iniciar sesión:', res || err)
+
+      // Mensajes de error
+      error.value = res?.message || 'Error al iniciar sesión.'
+      snackbarError.value = true
+
+      if (res?.intentos_restantes !== undefined) {
+        remainingAttempts.value = res.intentos_restantes
+      }
+
+      // Bloqueo
+      if (res?.bloqueado_hasta) {
+        message.value = `Cuenta bloqueada hasta ${new Date(res.bloqueado_hasta).toLocaleString()}`
+        snackbar.value = true
+      }
+
+      // Alerta adicional
+      if (res?.message?.includes('bloqueada')) {
+        message.value = 'Tu cuenta está bloqueada temporalmente.'
+        snackbar.value = true
+      }
+    } finally {
+      loading.value = false
+    }
+
+    loginForm.value.reset()
 }
-
-onMounted(() => {
-//   const token = localStorage.getItem('token')
-//   if (token) {
-//     const router = useRouter()
-//     router.push('/')
-//   }
-})
 </script>
 
 <template>
@@ -58,7 +94,7 @@ onMounted(() => {
             <v-img src="/assets/cocalbusiness_logo_transparent.png" max-width="250"/>
         </v-row>
         <v-card-title class="login-title">Iniciar Sesión</v-card-title>
-        <v-form ref="loginForm" @submit.prevent="login">
+        <v-form ref="loginForm" @submit.prevent="handleLogin">
             <v-row>
                 <v-text-field
                 v-model="correo"
@@ -73,7 +109,7 @@ onMounted(() => {
             </v-row>
             <v-row>
                 <v-text-field
-                v-model="contraseña"
+                v-model="contrasena"
                 label="Contraseña"
                 :type="showPassword ? 'text' : 'password'"
                 :rules="[v => !!v || 'Este campo no puede estar vacío.']"
@@ -99,12 +135,15 @@ onMounted(() => {
                 ¿No tienes una cuenta?
                 <router-link class="link" to="/register">Regístrate</router-link>
             </p>
-            <p v-if="error" class="error-text">{{ error }}</p>
         </v-form>
     </v-card>
 
     <v-snackbar v-model="snackbar" :timeout="4000" color="#A0B5E4" top>
-      <span class="snackbar-message">¡Inicio de sesión exitoso!</span>
+      <span class="snackbar-message">{{ message }}</span>
+    </v-snackbar>
+
+    <v-snackbar v-model="snackbarError" :timeout="4000" color="#f29191" top>
+      <span class="snackbar-message">{{ error }}</span>
     </v-snackbar>
   </v-container>
 </template>
@@ -207,22 +246,16 @@ onMounted(() => {
   transform: scale(1.02);
 }
 
-.error-text {
-  color: #ef5350;
-  margin-top: 14px;
-  font-size: 0.9rem;
-  text-align: center;
-  font-family: "Roboto Flex", sans-serif;
-}
-
 .link {
     color: #183581;
     font-family: 'Zalanda Sans', sans-serif;
     font-size: medium;
+    text-decoration: none;
 }
 
 .link:hover {
     color: #3159ae;
+    text-decoration: underline;
 }
 
 .snackbar-message {

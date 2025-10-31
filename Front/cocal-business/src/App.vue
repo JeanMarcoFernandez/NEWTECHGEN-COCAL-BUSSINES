@@ -10,7 +10,7 @@ const showAppBar = ref(true);
 watch(
   () => route.path, 
   (newPath) => {
-    showAppBar.value = !['/login', '/register', '/forgotPassword'].includes(newPath);
+    showAppBar.value = !['/login', '/register', '/forgotPassword', '/password/first-login', '/verify-2fa', '/restablish/:token'].includes(newPath);
   }
 );
 
