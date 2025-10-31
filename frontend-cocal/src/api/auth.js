@@ -3,28 +3,10 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000/api';
 
 // --- LOGIN ---
-export const login = async ({ email, password }) => {
+export const login = async ({ correo, contrasena }) => {
   try {
-    const res = await axios.post(`${API_URL}/auth/login`, {
-      correo: email,
-      contrasena: password,
-    });
-
-    // Guardamos el token y el rol automáticamente
-    if (res.data?.token) {
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('rol', res.data.rol); // rol para control de permisos
-      localStorage.setItem(
-        'usuario',
-        JSON.stringify({
-          nombre: res.data.nombre,
-          correo: res.data.correo,
-          rol: res.data.rol
-        })
-      );
-    }
-
-    return res.data;
+    const res = await axios.post(`${API_URL}/auth/login`, { correo, contrasena });
+    return res;
   } catch (err) {
     console.error('Error en login:', err.response?.data || err);
     throw err;

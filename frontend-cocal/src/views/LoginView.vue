@@ -74,60 +74,62 @@ import { login } from '../api/auth'
 
 const router = useRouter()
 
-const email = ref('');
-const password = ref('');
-const errores = ref({});
-const mostrarPassword = ref(false);
-const mensaje = ref('');
-const intentosRestantes = ref(null);
+const correo = ref('')
+const contrasena = ref('')
+const errores = ref({})
+const mostrarPassword = ref(false)
+const mensaje = ref('')
+const intentosRestantes = ref(null)
 
 const togglePassword = () => {
   mostrarPassword.value = !mostrarPassword.value
 }
 
 const handleLogin = async () => {
-  errores.value = {};
-  mensaje.value = '';
-  intentosRestantes.value = null;
+  errores.value = {}
+  mensaje.value = ''
+  intentosRestantes.value = null
 
   if (!correo.value) errores.value.correo = 'El correo es obligatorio'
   if (!contrasena.value) errores.value.contrasena = 'La contraseña es obligatoria'
   if (Object.keys(errores.value).length > 0) return
 
   try {
-    const response = await login({ email: email.value, password: password.value });
+    const { data } = await login({ correo: correo.value, contrasena: contrasena.value })
 
-    // SI TU BACKEND ENVÍA "requerirCambio"
-    if (response.requerirCambio) {
-      alert('Debe cambiar su contraseña antes de continuar 🔒');
-      localStorage.setItem('correo_cambio', email.value);
-      router.push('/password/primer-login');
-      return;
+    // 🔹 SI REQUIERE 2FA
+    if (data.requiere2FA) {
+      router.push({
+        path: '/verificar-2fa',
+        query: {
+          correo: data.correo,
+          usuario_id: data.usuario_id,
+          nombre: data.nombre
+        }
+      })
+      return
     }
 
-    alert('Inicio de sesión exitoso ✅');
-    router.push('/paginaprincipal');
+    // 🔹 SI NO REQUIERE 2FA
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('usuario', JSON.stringify(data.usuario))
+    router.push('/pagina-principal')
+
   } catch (err) {
-    console.error('Error al iniciar sesión:', err.response?.data || err);
+    const res = err.response?.data
+    mensaje.value = res?.message || 'Error al iniciar sesión ❌'
 
-    const res = err.response?.data;
-
-    if (res?.message) mensaje.value = res.message;
-    if (typeof res?.intentos_restantes === 'number') {
-      intentosRestantes.value = res.intentos_restantes;
+    if (res?.intentos_restantes !== undefined) {
+      intentosRestantes.value = res.intentos_restantes
     }
 
-    if (res?.message?.includes('bloqueada')) {
-      alert('⚠️ Tu cuenta está bloqueada temporalmente.');
-    } else if (res?.message) {
-      alert(res.message);
-    } else {
-      alert('Error al iniciar sesión ❌');
+    if (res?.bloqueado_hasta) {
+      mensaje.value = `Cuenta bloqueada hasta ${new Date(res.bloqueado_hasta).toLocaleString()}`
     }
   }
-};
-
+}
 </script>
+
 
 <style scoped>
 .error-text {
