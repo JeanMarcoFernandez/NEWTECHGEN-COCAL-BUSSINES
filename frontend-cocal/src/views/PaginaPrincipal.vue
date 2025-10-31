@@ -8,6 +8,16 @@
         Has iniciado sesión correctamente.
       </p>
 
+      <!-- Botón solo para ADMIN -->
+      <button
+        v-if="rol === 'ADMIN'"
+        @click="goToCreateUser"
+        class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm mb-4"
+      >
+        Crear Usuario
+      </button>
+
+      <!-- Botón de logout -->
       <button
         @click="logout"
         class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200 shadow-sm"
@@ -19,15 +29,30 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const rol = ref(null);
+
+onMounted(() => {
+  // Leer rol desde localStorage
+  rol.value = localStorage.getItem('rol');
+
+  // Si no hay token, redirigir al login
+  const token = localStorage.getItem('token');
+  if (!token) {
+    router.push('/login');
+  }
+});
 
 const logout = () => {
-  // 🧹 Eliminar token del almacenamiento local
   localStorage.removeItem('token');
-
-  // 🔁 Redirigir al login
+  localStorage.removeItem('rol'); // Limpiar rol
   router.push('/login');
+};
+
+const goToCreateUser = () => {
+  router.push('/create-user');
 };
 </script>

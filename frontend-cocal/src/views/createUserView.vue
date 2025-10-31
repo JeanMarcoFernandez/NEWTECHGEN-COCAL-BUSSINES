@@ -7,25 +7,25 @@
         <!-- CORREO -->
         <div>
           <input
-            v-model="email"
+            v-model="correo"
             type="email"
             placeholder="Correo electrónico"
             class="input-field"
-            :class="{ 'border-red-500': errores.email }"
+            :class="{ 'border-red-500': errores.correo }"
           />
-          <p v-if="errores.email" class="error-text">{{ errores.email }}</p>
+          <p v-if="errores.correo" class="error-text">{{ errores.correo }}</p>
         </div>
 
         <!-- CONTRASEÑA -->
         <div>
           <input
-            v-model="password"
+            v-model="contrasena"
             type="password"
             placeholder="Contraseña temporal"
             class="input-field"
-            :class="{ 'border-red-500': errores.password }"
+            :class="{ 'border-red-500': errores.contrasena }"
           />
-          <p v-if="errores.password" class="error-text">{{ errores.password }}</p>
+          <p v-if="errores.contrasena" class="error-text">{{ errores.contrasena }}</p>
         </div>
 
         <!-- NOMBRE -->
@@ -52,6 +52,18 @@
           <p v-if="errores.apellido" class="error-text">{{ errores.apellido }}</p>
         </div>
 
+        <!-- CARGO -->
+        <div>
+          <input
+            v-model="cargo"
+            type="text"
+            placeholder="Cargo"
+            class="input-field"
+            :class="{ 'border-red-500': errores.cargo }"
+          />
+          <p v-if="errores.cargo" class="error-text">{{ errores.cargo }}</p>
+        </div>
+
         <!-- ROL -->
         <div>
           <select
@@ -66,6 +78,19 @@
           <p v-if="errores.rol" class="error-text">{{ errores.rol }}</p>
         </div>
 
+        <!-- TELEFONO -->
+        <div>
+          <input
+            v-model="telefono"
+            type="text"
+            placeholder="Teléfono"
+            class="input-field"
+            :class="{ 'border-red-500': errores.telefono }"
+          />
+          <p v-if="errores.telefono" class="error-text">{{ errores.telefono }}</p>
+        </div>
+
+        <!-- BOTÓN -->
         <button
           type="submit"
           class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition font-semibold shadow-sm"
@@ -79,47 +104,55 @@
 
 <script setup>
 import { ref } from 'vue';
-import { createUser } from '../api/admin'; // asegúrate de tenerlo creado
+import { createUser } from '../api/admin'; // tu función axios para el POST
 
-const email = ref('');
-const password = ref('');
+const correo = ref('');
+const contrasena = ref('');
 const nombre = ref('');
 const apellido = ref('');
+const cargo = ref('');
 const rol = ref('');
+const telefono = ref('');
 const errores = ref({});
 
 const handleSubmit = async () => {
   errores.value = {};
 
-  // Validación básica de campos
-  if (!email.value) errores.value.email = 'El correo es obligatorio';
-  if (!password.value) errores.value.password = 'La contraseña es obligatoria';
+  if (!correo.value) errores.value.correo = 'El correo es obligatorio';
+  if (!contrasena.value) errores.value.contrasena = 'La contraseña es obligatoria';
   if (!nombre.value) errores.value.nombre = 'El nombre es obligatorio';
   if (!apellido.value) errores.value.apellido = 'El apellido es obligatorio';
+  if (!cargo.value) errores.value.cargo = 'El cargo es obligatorio';
   if (!rol.value) errores.value.rol = 'Debe seleccionar un rol';
+  if (!telefono.value) errores.value.telefono = 'El teléfono es obligatorio';
 
   if (Object.keys(errores.value).length > 0) return;
 
   try {
     const nuevoUsuario = {
-      email: email.value,
-      password: password.value,
+      correo: correo.value,
+      contrasena: contrasena.value,
       nombre: nombre.value,
       apellido: apellido.value,
-      rol: rol.value
+      cargo: cargo.value,
+      rol: rol.value,
+      telefono: telefono.value,
     };
 
     await createUser(nuevoUsuario);
+
     alert('Usuario creado correctamente ✅');
 
-    // limpiar
-    email.value = '';
-    password.value = '';
+    // Limpiar campos
+    correo.value = '';
+    contrasena.value = '';
     nombre.value = '';
     apellido.value = '';
+    cargo.value = '';
     rol.value = '';
+    telefono.value = '';
   } catch (error) {
-    alert('Error al crear usuario ❌');
+    alert(error.response?.data?.mensaje || 'Error al crear usuario ❌');
   }
 };
 </script>
