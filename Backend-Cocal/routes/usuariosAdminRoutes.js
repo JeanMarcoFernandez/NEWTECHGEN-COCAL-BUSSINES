@@ -14,13 +14,13 @@ const router = Router();
 
 /**
  * @swagger
- * /api/admin/usuarios/crear:
+ * /api/usuarios-admin/crear:
  *   post:
  *     summary: Crear un nuevo usuario por un administrador
  *     description: Permite al administrador registrar un nuevo usuario dentro de la empresa. El usuario creado deberá cambiar su contraseña en su primer inicio de sesión.
  *     tags: [Usuarios (Administrador)]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:

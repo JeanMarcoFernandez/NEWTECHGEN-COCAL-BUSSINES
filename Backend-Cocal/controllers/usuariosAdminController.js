@@ -1,14 +1,11 @@
-// controllers/usuariosAdminController.js
 import bcrypt from 'bcrypt';
 import { supabase } from '../db.js';
 
-
-
 export async function crearUsuarioPorAdmin(req, res) {
   try {
-    const { correo, nombre, apellido, cargo, contrasena, rol, id_empresa } = req.body;
-    const adminId = req.usuario.id; 
-    const adminRol = req.usuario.rol;
+    const { correo, contrasena, nombre, apellido, cargo, rol, telefono } = req.body;
+    const adminId = req.user.id;
+    const adminRol = req.user.rol;
 
     if (adminRol !== 'ADMIN') {
       return res.status(403).json({ mensaje: 'No tiene permisos para crear usuarios.' });
@@ -31,14 +28,14 @@ export async function crearUsuarioPorAdmin(req, res) {
     const { error } = await supabase.from('usuario').insert([
       {
         correo,
+        contrasena: hash,
         nombre,
         apellido,
         cargo,
-        id_empresa,
         rol: rol || 'EMPLEADO',
-        contrasena: hash,
-        creado_por: adminId,
-        primer_login: true,
+        telefono,
+        primer_login: true,   // 🔹 Forzar cambio de contraseña al primer inicio
+        creado_por: adminId,  // 🔹 Indica quién lo creó
       },
     ]);
 

@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/auth/primer-login:
+ * /api/contrasena/primer-login:
  *   post:
  *     summary: Cambiar contraseña en el primer inicio de sesión
  *     description: Permite a los usuarios creados por un administrador actualizar su contraseña obligatoriamente antes de ingresar al sistema.
