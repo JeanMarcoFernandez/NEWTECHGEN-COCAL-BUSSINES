@@ -70,6 +70,7 @@ async function verificarCodigo() {
     mensajeError.value = false;
     localStorage.setItem("token", data.token);
     localStorage.setItem("usuario", JSON.stringify(data.usuario));
+    localStorage.setItem("rol", data.usuario.rol);
 
     setTimeout(() => router.push("/pagina-principal"), 1500);
   } catch (err) {

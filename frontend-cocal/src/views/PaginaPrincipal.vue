@@ -8,6 +8,10 @@
         Has iniciado sesión correctamente.
       </p>
 
+      <p class="text-gray-500 mb-4">
+      Tu rol actual es: <strong>{{ rol }}</strong>
+    </p>
+
       <!-- Botón solo para ADMIN -->
       <button
         v-if="rol === 'ADMIN'"
