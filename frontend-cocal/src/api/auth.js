@@ -83,6 +83,23 @@ export const createUser = async (usuario) => {
   }
 };
 
+export async function refreshToken() {
+  const token = localStorage.getItem('token')
+  if (!token) return null
+
+  try {
+    const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    localStorage.setItem('token', data.token)
+    console.log('✅ Token renovado automáticamente')
+    return data.token
+  } catch (err) {
+    console.warn('⚠️ Token expirado, cerrando sesión...')
+    logout()
+    return null
+  }
+}
 // --- CERRAR SESIÓN ---
 export const logout = () => {
   localStorage.removeItem('token');

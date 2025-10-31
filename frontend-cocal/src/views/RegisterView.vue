@@ -145,7 +145,7 @@ const handleRegister = async () => {
       contrasena: contrasena.value
     });
 
-    alert('Registro exitoso ✅');
+    alert('Registro exitoso');
     // limpiar campos
     nombre.value = '';
     apellido.value = '';

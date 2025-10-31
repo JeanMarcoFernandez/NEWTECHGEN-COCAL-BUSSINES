@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-200">
     <div class="bg-white p-8 rounded-2xl shadow-lg w-96 text-center">
       <h1 class="text-2xl font-bold text-gray-800 mb-4">
-        ¡Bienvenido a la página principal! 🎉
+        ¡Bienvenido a la página principal! 
       </h1>
       <p class="text-gray-600 mb-6">
         Has iniciado sesión correctamente.
