@@ -28,14 +28,10 @@ export const resetPassword = async (email) => {
   return await axios.post(`${API_URL}/auth/reset-password`, { email });
 };
 
-// --- CHANGE PASSWORD (usuario cambia su contraseña) ---
-export const changePassword = async (data, token) => {
-  // data = { oldPassword, newPassword }
-  return await axios.put(
-    `${API_URL}/auth/change-password`,
-    data,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+// --- CAMBIO DE CONTRASEÑA EN PRIMER LOGIN ---
+export const changePasswordFirstLogin = async (correo, nuevaContrasena) => {
+  return await axios.post(`http://localhost:3000/api/contrasena/primer-login`, {
+    correo,
+    nuevaContrasena,
+  });
 };

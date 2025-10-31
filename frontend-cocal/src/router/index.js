@@ -10,7 +10,7 @@ const routes = [
   { path: '/login', component: LoginView },
   { path: '/register', component: RegisterView },
   { path: '/reset-password', component: resetPasswordView },
-  { path: '/change-password/:token', component: changePasswordView, props: true },
+  { path: '/password/primer-login', component: changePasswordView, props: true },
   { path: '/create-user', component: createUserView },
 ];
 
