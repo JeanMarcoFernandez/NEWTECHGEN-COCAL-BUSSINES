@@ -33,7 +33,7 @@ export async function solicitarRestablecimiento(req, res) {
     ]);
 
     
-    const enlace = `http://localhost:5173/restablecer/${token}`;
+    const enlace = `http://localhost:5173/restablish/${token}`;
     await sendEmail({
       to: correo,
       subject: "🔑 Restablecer contraseña - COCAL",
