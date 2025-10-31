@@ -1,0 +1,35 @@
+.
+|-- app.js
+|-- controllers
+|   |-- auditoriaController.js
+|   |-- authController.js
+|   |-- cambiarContrasenaController.js
+|   |-- seguridadController.js
+|   |-- usuariosAdminController.js
+|   `-- usuariosControlador.js
+|-- db.js
+|-- docs
+|-- estructura.txt
+|-- middleware
+|   |-- validarRol.js
+|   `-- verificarToken.js
+|-- models
+|   `-- userModel.js
+|-- package-lock.json
+|-- package.json
+|-- routes
+|   |-- auditoriaRoutes.js
+|   |-- authRoutes.js
+|   |-- cambiarContrasenaRoutes.js
+|   |-- seguridadRoutes.js
+|   |-- usuarios.js
+|   `-- usuariosAdminRoutes.js
+|-- server.js
+|-- services
+|   `-- auditoriaService.js
+|-- swagger.js
+`-- utils
+    |-- generarToken.js
+    `-- requestInfo.js
+
+7 directories, 25 files
