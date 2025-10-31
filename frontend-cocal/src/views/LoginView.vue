@@ -68,7 +68,10 @@
       <div class="text-center mt-4 text-sm">
         <router-link to="/register" class="text-blue-600 hover:underline">Crear cuenta</router-link>
         <br />
-        <router-link to="/reset" class="text-gray-500 hover:underline">¿Olvidaste tu contraseña?</router-link>
+      <router-link to="/reset-password" class="text-gray-500 hover:underline">
+  ¿Olvidaste tu contraseña?
+</router-link>
+
       </div>
     </div>
   </div>

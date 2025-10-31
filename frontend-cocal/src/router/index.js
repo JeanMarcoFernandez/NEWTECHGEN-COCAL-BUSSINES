@@ -4,9 +4,9 @@ import RegisterView from '../views/RegisterView.vue';
 import resetPasswordView from '../views/resetPasswordView.vue';
 import changePasswordView from '../views/changePasswordView.vue';
 import createUserView from '../views/createUserView.vue';
-import Verificar2FA from '../views/Verificar2FA.vue'; // ✅ nueva vista
-import PaginaPrincipal from '../views/PaginaPrincipal.vue'; // si no la tienes, agrégala
-
+import Verificar2FA from '../views/Verificar2FA.vue'; 
+import PaginaPrincipal from '../views/PaginaPrincipal.vue'; 
+import RestablecerPasswordView from '../views/RestablecerPasswordView.vue';
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: LoginView },
@@ -14,8 +14,10 @@ const routes = [
   { path: '/reset-password', component: resetPasswordView },
   { path: '/change-password/:token', component: changePasswordView, props: true },
   { path: '/create-user', component: createUserView },
-  { path: '/verificar-2fa', component: Verificar2FA }, // ✅ ruta 2FA
+  { path: '/verificar-2fa', component: Verificar2FA },
   { path: '/pagina-principal', component: PaginaPrincipal, meta: { requiresAuth: true } },
+  { path: '/restablecer/:token', component: RestablecerPasswordView, props: true },
+
 ];
 
 const router = createRouter({
