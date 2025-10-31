@@ -109,7 +109,7 @@ const handleLogin = async () => {
       return
     }
 
-    // 🔹 Caso: primer login (debe cambiar contraseña)
+    
     if (data.requerirCambio) {
       alert('Debe cambiar su contraseña antes de continuar 🔒')
       localStorage.setItem('correo_cambio', correo.value)
@@ -117,15 +117,29 @@ const handleLogin = async () => {
       return
     }
 
-    // 🔹 Caso: login normal
+    
     localStorage.setItem('token', data.token)
     localStorage.setItem('usuario', JSON.stringify(data.usuario))
+    const payload = JSON.parse(atob(data.token.split('.')[1]))
+console.log('🧩 JWT decodificado:', payload)
+
+// Ver tiempo de expiración en minutos/segundos
+const ahora = Date.now()
+const expiraEn = new Date(payload.exp * 1000)
+const segundosRestantes = Math.round((expiraEn - ahora) / 1000)
+console.log(`⏳ Tiempo restante antes de expiración: ${segundosRestantes}s`)
     alert('Inicio de sesión exitoso ✅')
     router.push('/pagina-principal')
 
   } catch (err) {
     const res = err.response?.data
     console.error('Error al iniciar sesión:', res || err)
+     if (err.response?.status === 440 || err.response?.status === 401) {
+    alert('⚠️ Sesión expirada, volvé a iniciar sesión.')
+    localStorage.clear()
+    router.push('/login')
+    return
+  }
 
     // Mensajes de error
     mensaje.value = res?.message || 'Error al iniciar sesión ❌'
