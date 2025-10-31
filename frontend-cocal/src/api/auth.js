@@ -58,17 +58,11 @@ export async function reenviar2FA(usuario_id, correo, nombre) {
   return await axios.post(`${API_URL}/auth/enviar-2fa`, { usuario_id, correo, nombre });
 }
 // --- CAMBIO DE CONTRASEÑA EN PRIMER LOGIN ---
-export const changePasswordFirstLogin = async (correo, nuevaContrasena) => {
-  try {
-    const res = await axios.post(`${API_URL}/contrasena/primer-login`, {
-      correo,
-      nuevaContrasena,
-    });
-    return res.data;
-  } catch (err) {
-    console.error('Error en changePasswordFirstLogin:', err.response?.data || err);
-    throw err;
-  }
+export const changePasswordFirstLogin = (correo, nuevaContrasena) => {
+  return axios.post(`${API_URL}/contrasena/primer-login`, {
+    correo,
+    nuevaContrasena
+  });
 };
 
 // --- CREAR USUARIO POR ADMIN ---
