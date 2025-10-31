@@ -2,9 +2,9 @@
   <div
     v-if="tiempoRestante > 0"
     class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-md text-sm font-semibold transition-colors"
-    :class="tiempoRestante <= 5 ? 'bg-red-600 text-white' : 'bg-black text-white'"
+    :class="tiempoRestante <= 10 ? 'bg-red-600 text-white' : 'bg-black text-white'"
   >
-    ⏳ Token expira en: {{ tiempoRestante }}s
+     Token expira en: {{ tiempoRestante }}s
   </div>
 </template>
 
@@ -16,39 +16,39 @@ const router = useRouter()
 const tiempoRestante = ref(0)
 let intervalo = null
 
-onMounted(() => {
-  intervalo = setInterval(() => {
-    const token = localStorage.getItem('token')
+function calcularTiempo() {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    tiempoRestante.value = 0
+    return
+  }
 
-    // Si no hay token, no mostramos nada
-    if (!token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const diff = Math.floor((payload.exp * 1000 - Date.now()) / 1000)
+
+    if (diff <= 0) {
+      console.warn('💣 Token expirado, cerrando sesión.')
+      clearInterval(intervalo)
+      localStorage.clear()
+      router.push('/login')
       tiempoRestante.value = 0
       return
     }
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]))
-      const segundos = Math.max(
-        0,
-        Math.floor((payload.exp * 1000 - Date.now()) / 1000)
-      )
-      tiempoRestante.value = segundos
+    tiempoRestante.value = diff
+  } catch (err) {
+    console.error('Error al decodificar token:', err)
+    localStorage.clear()
+    router.push('/login')
+    tiempoRestante.value = 0
+  }
+}
 
-      // Si el token ya expiró → cerrar sesión automáticamente
-      if (segundos === 0) {
-        clearInterval(intervalo)
-        alert('⚠️ Tu sesión ha expirado automáticamente.')
-        localStorage.clear()
-        router.push('/login')
-      }
-    } catch (err) {
-      console.error('Error al decodificar token:', err)
-      tiempoRestante.value = 0
-    }
-  }, 1000)
+onMounted(() => {
+  calcularTiempo()
+  intervalo = setInterval(calcularTiempo, 1000)
 })
 
-onUnmounted(() => {
-  if (intervalo) clearInterval(intervalo)
-})
+onUnmounted(() => clearInterval(intervalo))
 </script>

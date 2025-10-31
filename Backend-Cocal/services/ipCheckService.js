@@ -2,10 +2,7 @@ import axios from 'axios';
 import { supabase } from '../db.js';
 import { sendEmail } from './emailService.js';
 
-/**
- * 🧠 Función: verificarCambioIP
- * Detecta si la IP cambió y guarda también información de ubicación y navegador.
- */
+
 export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
   try {
     // Si estamos en local (::1 o 127.0.0.1), tratamos de conseguir la IP pública real
@@ -15,7 +12,7 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
       ipReal = resp.data.ip;
     }
 
-    // Consultar info geográfica de la IP (país, ciudad, etc.)
+    
     let ubicacion = 'Desconocida';
     try {
       const geo = await axios.get(`https://ipapi.co/${ipReal}/json/`);
@@ -24,7 +21,7 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
       ubicacion = 'Ubicación no disponible';
     }
 
-    // Si es primera vez, simplemente guardamos IP + sesión + userAgent
+    
     if (!user.ultima_ip) {
       await supabase
         .from('usuario')
@@ -38,7 +35,7 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
       return;
     }
 
-    // Si cambió la IP → enviar alerta
+    
     if (user.ultima_ip !== ipReal) {
       await sendEmail({
         to: user.correo,
@@ -69,7 +66,7 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
         })
         .eq('id', user.id);
     } else {
-      // Actualizar solo la fecha de última sesión
+      
       await supabase
         .from('usuario')
         .update({
@@ -80,6 +77,6 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
         .eq('id', user.id);
     }
   } catch (err) {
-    console.error('❌ Error en verificarCambioIP:', err.message);
+    console.error('Error en verificarCambioIP:', err.message);
   }
 }

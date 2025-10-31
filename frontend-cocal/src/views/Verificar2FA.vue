@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="bg-white shadow-xl rounded-lg p-8 w-full max-w-md">
-      <h2 class="text-2xl font-bold text-center text-blue-700 mb-6">🔐 Verificación en dos pasos</h2>
+      <h2 class="text-2xl font-bold text-center text-blue-700 mb-6"> Verificación en dos pasos</h2>
 
       <p class="text-gray-600 text-center mb-4">
         Hemos enviado un código de verificación a tu correo electrónico:
@@ -32,7 +32,7 @@
 
       <div class="text-center mt-6">
         <button @click="reenviarCodigo" class="text-blue-600 hover:underline">
-          Reenviar código 🔁
+          Reenviar código 
         </button>
       </div>
     </div>
@@ -66,7 +66,7 @@ async function verificarCodigo() {
   cargando.value = true;
   try {
     const { data } = await verificar2FA(correo, codigo.value);
-    mensaje.value = "✅ Verificación exitosa. Redirigiendo...";
+    mensaje.value = "Verificación exitosa. Redirigiendo...";
     mensajeError.value = false;
     localStorage.setItem("token", data.token);
     localStorage.setItem("usuario", JSON.stringify(data.usuario));

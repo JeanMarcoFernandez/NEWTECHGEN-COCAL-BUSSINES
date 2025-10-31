@@ -18,7 +18,7 @@ export async function enviarCodigo2FA(usuario_id, correo, nombre) {
 
     await sendEmail({
       to: correo,
-      subject: "🔐 Código de Verificación - COCAL",
+      subject: " Código de Verificación - COCAL",
       html: `
         <h2>Hola ${nombre}</h2>
         <p>Tu código de verificación en dos pasos es:</p>
@@ -72,15 +72,13 @@ export async function verificarCodigo2FA(req, res) {
       .eq("id", registro.id);
 
     
-    const token = generarToken(
-      {
-        id: user.id,
-        rol: user.rol,
-        correo: user.correo,
-        ultimaActividad: Date.now()
-      },
-      "30s" 
-    );
+    const token = generarToken({
+  id: user.id,
+  rol: user.rol,
+  correo: user.correo,
+  ultimaActividad: Date.now()
+});
+
 
     
     await supabase
