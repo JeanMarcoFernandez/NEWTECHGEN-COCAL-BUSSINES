@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue';
 import resetPasswordView from '../views/resetPasswordView.vue';
 import changePasswordView from '../views/changePasswordView.vue';
 import createUserView from '../views/createUserView.vue';
+import PaginaPrincipal from '../views/PaginaPrincipal.vue';
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -12,6 +13,7 @@ const routes = [
   { path: '/reset-password', component: resetPasswordView },
   { path: '/password/primer-login', component: changePasswordView, props: true },
   { path: '/create-user', component: createUserView },
+  { path: '/paginaprincipal', component: PaginaPrincipal },
 ];
 
 const router = createRouter({

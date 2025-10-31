@@ -92,19 +92,17 @@ const handleLogin = async () => {
   if (Object.keys(errores.value).length > 0) return;
 
   try {
-    const { data } = await login({ email: email.value, password: password.value });
+    const response = await login({ email: email.value, password: password.value });
 
-    // Si el backend indica que debe cambiar su contraseña
-    if (data.requerirCambio) {
+    // SI TU BACKEND ENVÍA "requerirCambio"
+    if (response.requerirCambio) {
       alert('Debe cambiar su contraseña antes de continuar 🔒');
-      localStorage.setItem('correo_cambio', email.value); // <- guardamos el correo
+      localStorage.setItem('correo_cambio', email.value);
       router.push('/password/primer-login');
       return;
     }
 
-    // Si todo va bien
     alert('Inicio de sesión exitoso ✅');
-    localStorage.setItem('token', data.token);
     router.push('/paginaprincipal');
   } catch (err) {
     console.error('Error al iniciar sesión:', err.response?.data || err);
@@ -116,7 +114,6 @@ const handleLogin = async () => {
       intentosRestantes.value = res.intentos_restantes;
     }
 
-    // Mostrar alertas más claras
     if (res?.message?.includes('bloqueada')) {
       alert('⚠️ Tu cuenta está bloqueada temporalmente.');
     } else if (res?.message) {
@@ -126,6 +123,7 @@ const handleLogin = async () => {
     }
   }
 };
+
 </script>
 
 <style scoped>
