@@ -39,7 +39,7 @@ const handleChange = async () => {
   try {
     console.log('Enviando:', { correo: correo.value, nuevaContrasena: newContrasena.value })
     const { data } = await changePasswordFirstLogin(correo.value, newContrasena.value)
-    message = data.message || 'Contraseña cambiada exitosamente.'
+    message.value = data.message || 'Contraseña cambiada exitosamente.'
     snackbar.value = true
 
     // limpiar datos y redirigir

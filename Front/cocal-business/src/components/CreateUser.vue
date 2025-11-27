@@ -53,6 +53,8 @@ const handleRegister = async () => {
   } catch (error) {
     error.value = error.response?.data?.mensaje || 'Error al crear usuario'
     snackbarError.value = true
+  } finally {
+    loading.value = false
   }
 };
 
@@ -123,7 +125,7 @@ onMounted(() => {
                     required
                     />
                 </v-col>
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="6">
                     <v-text-field
                     v-model="telefono"
                     class="register-input"
@@ -135,7 +137,9 @@ onMounted(() => {
                     required
                     />
                 </v-col>
-                <v-col cols="12" md="3">
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="6">
                   <v-select
                     label="Rol"
                     v-model="rol"
@@ -145,6 +149,18 @@ onMounted(() => {
                     item-value="value"
                     :placeholder="'Seleccionar rol'"  
                   />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="contrasena"
+                    class="register-input"
+                    label="Contraseña temporal"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v.length >= 8 || 'La contraseña debe tener al menos 8 caracteres.'
+                    ]"
+                    required
+                    />
                 </v-col>
             </v-row>
 
@@ -156,8 +172,11 @@ onMounted(() => {
                 block
                 rounded
                 >
-                Registrarse
+                Registrar
                 </v-btn>
+            </v-row>
+            <v-row class="justify-center pt-4">
+                <router-link class="link" to="/home">Volver</router-link>
             </v-row>
         </v-form>
     </v-card>

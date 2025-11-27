@@ -30,7 +30,7 @@ async function handleRestablish() {
   } catch (err) {
     error.value = err.response?.data?.message || "Error al restablecer contraseña.";
   } finally {
-    cargando.value = false;
+    loading.value = false;
   }
 }
 
