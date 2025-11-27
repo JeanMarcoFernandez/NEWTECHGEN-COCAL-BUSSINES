@@ -66,7 +66,7 @@ const submitForm = () => {
                             </p>
                         </v-col>
                         <v-col cols="12" sm="3">
-                            <v-btn class="btn-start" block>
+                            <v-btn class="btn-start" block to="/login">
                                 <span class="btn-text">Empezar</span>
                                 <v-icon class="arrow-icon">mdi-arrow-right</v-icon>
                             </v-btn>

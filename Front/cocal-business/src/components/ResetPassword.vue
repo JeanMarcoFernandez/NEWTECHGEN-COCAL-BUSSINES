@@ -1,58 +1,83 @@
 <script setup>
-import { ref } from 'vue'
-import { solicitarRestablecimiento } from "../api/auth.js";
+import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { restablecerContrasena } from "../api/auth.js";
 
-const correo = ref('')
-const message = ref('')
+const route = useRoute();
+const router = useRouter();
+
+const token = route.params.token;
+const newContrasena = ref('')
+const showPassword1 = ref(false)
+const showPassword2 = ref(false)
 const error = ref('')
+const message = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
-async function request() {
+async function handleRestablish() {
   snackbar.value = false
   snackbarError.value = false
   error.value = ''
   message.value = ''
-  loading.value = true
+  loading.value = true;
 
   try {
-    const { data } = await solicitarRestablecimiento(correo.value);
+    const { data } = await restablecerContrasena(token, newContrasena.value);
     message.value = data.message;
-    snackbar.value = true
+    router.push("/login");
   } catch (err) {
-    error.value = err.response?.data?.message || "Error al enviar el correo.";
-    snackbarError.value = true
+    error.value = err.response?.data?.message || "Error al restablecer contraseña.";
   } finally {
-    loading.value = false;
+    cargando.value = false;
   }
 }
+
 </script>
 
 <template>
   <v-container fluid class="reset-page">
     <v-card class="reset-card" elevation="3">
         <v-card-title class="reset-title">Restablece tu contraseña</v-card-title>
-        <v-form ref="resetForm" @submit.prevent="request">
+        <v-form ref="resetForm" @submit.prevent="handleRestablish">
             <v-row class="px-4 pb-6">
                 <p>
-                    Ingresa tu dirección de correo electrónico. Te enviaremos un enlace para restablecer tu contraseña. <br/>
-                    Si no recibes el enlace en unos minutos, revisa la carpeta de spam o intenta con otro correo.
+                    Ingresa una nueva contraseña.
                 </p>
             </v-row>
             <v-row>
-                <v-text-field
-                v-model="correo"
-                label="Correo electrónico"
-                type="email"
-                :rules="[
-                    v => !!v || 'Este campo no puede estar vacío.',
-                    v => /.+@.+\..+/.test(v) || 'El correo electrónico no es válido.']"
-                class="reset-input"
-                variant="outlined"
-            />
+                <v-col cols="12">
+                    <v-text-field
+                    v-model="newContrasena"
+                    label="Contraseña"
+                    :type="showPassword1 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v.length >= 8 || 'La contraseña debe tener al menos 8 caracteres.'
+                    ]"
+                    :append-inner-icon="showPassword1 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword1 = !showPassword1"
+                    required
+                    />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                    <v-text-field
+                    label="Confirmar Contraseña"
+                    :type="showPassword2 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v === newContrasena || 'Las contraseñas no coinciden.'
+                    ]"
+                    :append-inner-icon="showPassword2 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword2 = !showPassword2"
+                    required
+                    />
+                </v-col>
             </v-row>
-            <v-row class="py-4">
+            <v-row>
                 <v-btn
                 type="submit"
                 class="reset-btn"
@@ -60,15 +85,11 @@ async function request() {
                 block
                 rounded
                 >
-                Restablecer contraseña
+                Restablecer
                 </v-btn>
-            </v-row>
-            <v-row class="justify-center pt-2">
-                <router-link class="link" to="/login">Volver al Inicio de Sesión</router-link>
             </v-row>
         </v-form>
     </v-card>
-
     <v-snackbar v-model="snackbar" :timeout="4000" color="#A0B5E4" top>
       <span class="snackbar-message">{{ message }}</span>
     </v-snackbar>
@@ -185,12 +206,11 @@ font-family: "Zalanda Sans", sans-serif;
   transform: scale(1.02);
 }
 
-.error-text {
-  color: #ef5350;
-  margin-top: 14px;
-  font-size: 0.9rem;
-  text-align: center;
-  font-family: "Roboto Flex", sans-serif;
+.snackbar-message {
+    font-family: 'Zalando Sans', sans-serif;
+    font-size: larger;
+    text-align: justify;
+    color: #061244;
 }
 
 .link {
@@ -201,12 +221,5 @@ font-family: "Zalanda Sans", sans-serif;
 
 .link:hover {
     color: #3159ae;
-}
-
-.snackbar-message {
-    font-family: 'Zalando Sans', sans-serif;
-    font-size: larger;
-    text-align: justify;
-    color: #061244;
 }
 </style>

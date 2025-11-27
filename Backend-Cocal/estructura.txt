@@ -3,8 +3,11 @@
 |-- controllers
 |   |-- auditoriaController.js
 |   |-- authController.js
+|   |-- authRefreshController.js
 |   |-- cambiarContrasenaController.js
+|   |-- restablecerContrasenaController.js
 |   |-- seguridadController.js
+|   |-- twoFactorController.js
 |   |-- usuariosAdminController.js
 |   `-- usuariosControlador.js
 |-- db.js
@@ -21,15 +24,21 @@
 |   |-- auditoriaRoutes.js
 |   |-- authRoutes.js
 |   |-- cambiarContrasenaRoutes.js
+|   |-- restablecerContrasenaRoutes.js
 |   |-- seguridadRoutes.js
+|   |-- twoFactorRoutes.js
 |   |-- usuarios.js
 |   `-- usuariosAdminRoutes.js
 |-- server.js
 |-- services
-|   `-- auditoriaService.js
+|   |-- auditoriaService.js
+|   |-- authAttemptsService.js
+|   |-- emailService.js
+|   `-- ipCheckService.js
 |-- swagger.js
+|-- testEmail.js
 `-- utils
     |-- generarToken.js
     `-- requestInfo.js
 
-7 directories, 25 files
+7 directories, 34 files

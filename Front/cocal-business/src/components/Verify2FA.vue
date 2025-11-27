@@ -1,15 +1,23 @@
 <script setup>
-import { ref } from 'vue'
-import { solicitarRestablecimiento } from "../api/auth.js";
+import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { verificar2FA, reenviar2FA } from "../api/auth.js";
 
-const correo = ref('')
+const route = useRoute();
+const router = useRouter();
+
+const correo = route.query.correo || "";
+const usuario_id = route.query.usuario_id || "";
+const nombre = route.query.nombre || "";
+
+const codigo = ref(null)
 const message = ref('')
 const error = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
-async function request() {
+async function verifyCode() {
   snackbar.value = false
   snackbarError.value = false
   error.value = ''
@@ -17,37 +25,52 @@ async function request() {
   loading.value = true
 
   try {
-    const { data } = await solicitarRestablecimiento(correo.value);
-    message.value = data.message;
+    const { data } = await verificar2FA(correo, codigo.value);
+    message.value = "Verificación exitosa. Redirigiendo...";
     snackbar.value = true
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("usuario", JSON.stringify(data.usuario));
+    localStorage.setItem("rol", data.usuario.rol);
+
+    router.push("/");
   } catch (err) {
-    error.value = err.response?.data?.message || "Error al enviar el correo.";
-    snackbarError.value = true
+    error.value = err.response?.data?.message || "Error al verificar el código.";
+    snackbarError.value = true;
   } finally {
     loading.value = false;
   }
 }
+
+async function resend() {
+  try {
+    await reenviar2FA(usuario_id, correo, nombre);
+    message.value = "Nuevo código enviado al correo.";
+    snackbar.value = true
+  } catch (err) {
+    error.value = "No se pudo reenviar el código.";
+    snackbarError.value = true;
+  }
+}
+
 </script>
 
 <template>
   <v-container fluid class="reset-page">
     <v-card class="reset-card" elevation="3">
-        <v-card-title class="reset-title">Restablece tu contraseña</v-card-title>
-        <v-form ref="resetForm" @submit.prevent="request">
+        <v-card-title class="reset-title">Verificación de dos pasos</v-card-title>
+        <v-form ref="resetForm" @submit.prevent="verifyCode">
             <v-row class="px-4 pb-6">
                 <p>
-                    Ingresa tu dirección de correo electrónico. Te enviaremos un enlace para restablecer tu contraseña. <br/>
-                    Si no recibes el enlace en unos minutos, revisa la carpeta de spam o intenta con otro correo.
+                    Ingresa el código de verificación enviado a tu correo electrónico.
                 </p>
             </v-row>
             <v-row>
                 <v-text-field
-                v-model="correo"
-                label="Correo electrónico"
-                type="email"
+                v-model="codigo"
+                type="number"
                 :rules="[
                     v => !!v || 'Este campo no puede estar vacío.',
-                    v => /.+@.+\..+/.test(v) || 'El correo electrónico no es válido.']"
+                    v => /^[0-9]{6}$/.test(v) || 'El código debe tener 6 dígitos.']"
                 class="reset-input"
                 variant="outlined"
             />
@@ -60,15 +83,22 @@ async function request() {
                 block
                 rounded
                 >
-                Restablecer contraseña
-                </v-btn>
-            </v-row>
-            <v-row class="justify-center pt-2">
-                <router-link class="link" to="/login">Volver al Inicio de Sesión</router-link>
+                Enviar
+              </v-btn>
             </v-row>
         </v-form>
+        <v-row class="py-4">
+            <v-btn
+            class="reset-btn"
+            :loading="loading"
+            block
+            rounded
+            @click="resend"
+            >
+            Reenviar código
+          </v-btn>
+        </v-row>
     </v-card>
-
     <v-snackbar v-model="snackbar" :timeout="4000" color="#A0B5E4" top>
       <span class="snackbar-message">{{ message }}</span>
     </v-snackbar>
@@ -185,12 +215,11 @@ font-family: "Zalanda Sans", sans-serif;
   transform: scale(1.02);
 }
 
-.error-text {
-  color: #ef5350;
-  margin-top: 14px;
-  font-size: 0.9rem;
-  text-align: center;
-  font-family: "Roboto Flex", sans-serif;
+.snackbar-message {
+    font-family: 'Zalando Sans', sans-serif;
+    font-size: larger;
+    text-align: justify;
+    color: #061244;
 }
 
 .link {
@@ -201,12 +230,5 @@ font-family: "Zalanda Sans", sans-serif;
 
 .link:hover {
     color: #3159ae;
-}
-
-.snackbar-message {
-    font-family: 'Zalando Sans', sans-serif;
-    font-size: larger;
-    text-align: justify;
-    color: #061244;
 }
 </style>

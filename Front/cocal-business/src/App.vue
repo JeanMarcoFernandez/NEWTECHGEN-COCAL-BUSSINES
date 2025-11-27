@@ -1,16 +1,27 @@
 <script setup>
-import { RouterView, RouterLink, useRoute } from 'vue-router'
+import { RouterView, RouterLink, useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, watch  } from 'vue'
+
+const router = useRouter()
 
 const drawer = ref(false);
 
 const route = useRoute();
 const showAppBar = ref(true);
+const rol = ref(null);
+
+const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('rol'); // Limpiar rol
+
+  rol.value = null
+  router.push('/login');
+};
 
 watch(
   () => route.path, 
   (newPath) => {
-    showAppBar.value = !['/login', '/register', '/forgotPassword'].includes(newPath);
+    showAppBar.value = !['/login', '/register', '/forgotPassword', '/password/first-login', '/verify-2fa', '/restablish/:token', '/create-user'].includes(newPath);
   }
 );
 
@@ -26,6 +37,9 @@ const redirectToGoogleMaps = () => {
 
 onMounted(() => {
   tooltipVisible.value = false;
+  // Leer rol desde localStorage
+  rol.value = localStorage.getItem('rol');
+  console.log(rol.value)
 });
 </script>
 
@@ -42,16 +56,26 @@ onMounted(() => {
         </v-col>
         <v-col cols="11" class="d-flex justify-end">
         <v-btn
+            v-if="!rol"
             class="app-bar-login-btn"
             size="large"
             elevation="3"
             to="/login"
         >Acceder</v-btn>
         <v-btn
+            v-if="!rol"
             class="app-bar-register-btn"
             size="large"
             elevation="3"
+            to="/register"
         >Crear cuenta</v-btn>
+        <v-btn
+            v-if="rol"
+            class="app-bar-login-btn"
+            size="large"
+            elevation="3"
+            @click="logout"
+        >Cerrar sesión</v-btn>
         </v-col>
       </v-row>
   </v-app-bar>
@@ -68,12 +92,16 @@ onMounted(() => {
           <v-list-item-title class="nav-item">Inicio</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/login">
+        <v-list-item to="/login" v-if="!rol">
           <v-list-item-title class="nav-item">Acceder</v-list-item-title>
         </v-list-item>
 
-        <v-list-item>
+        <v-list-item to="/register" v-if="!rol">
           <v-list-item-title class="nav-item">Crear cuenta</v-list-item-title>
+        </v-list-item>
+
+        <v-list-item @click="logout" v-if="rol">
+          <v-list-item-title class="nav-item">Cerrar sesión</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

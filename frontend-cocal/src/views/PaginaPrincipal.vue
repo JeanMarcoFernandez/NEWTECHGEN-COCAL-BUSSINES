@@ -42,6 +42,7 @@ const rol = ref(null);
 onMounted(() => {
   // Leer rol desde localStorage
   rol.value = localStorage.getItem('rol');
+  console.log(rol.value)
 
   // Si no hay token, redirigir al login
   const token = localStorage.getItem('token');
