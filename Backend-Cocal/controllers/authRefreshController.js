@@ -18,7 +18,7 @@ export async function refreshToken(req, res) {
     const expTimestamp = decoded.exp * 1000;
     const now = Date.now();
 
-    if (now - expTimestamp > 5 * 60 * 1000) { 
+    if (now - expTimestamp > 5 * 60 * 10000) { 
       return res.status(401).json({ message: 'El token expiró definitivamente. Inicia sesión nuevamente.' });
     }
 
