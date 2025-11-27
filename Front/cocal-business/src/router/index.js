@@ -7,6 +7,7 @@ import ResetPassword from '@/components/ResetPassword.vue'
 import ChangePassword from '@/components/ChangePassword.vue'
 import Verify2FA from '@/components/Verify2FA.vue'
 import CreateUser from '@/components/CreateUser.vue'
+import HomePage from '@/components/HomePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,11 @@ const router = createRouter({
       path: '/create-user',
       name: 'CreateUser',
       component: CreateUser
+    },
+    {
+      path: '/home',
+      name: 'HomePage',
+      component: HomePage
     },
   ],
 })

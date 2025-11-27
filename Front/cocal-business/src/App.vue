@@ -9,6 +9,7 @@ const drawer = ref(false);
 const route = useRoute();
 const showAppBar = ref(true);
 const rol = ref(null);
+const isLogged = ref(false);
 
 const logout = () => {
   localStorage.removeItem('token');
@@ -21,7 +22,7 @@ const logout = () => {
 watch(
   () => route.path, 
   (newPath) => {
-    showAppBar.value = !['/login', '/register', '/forgotPassword', '/password/first-login', '/verify-2fa', '/restablish/:token', '/create-user'].includes(newPath);
+    showAppBar.value = !['/login', '/register', '/forgotPassword', '/password/first-login', '/verify-2fa', '/restablish/', '/create-user'].includes(newPath);
   }
 );
 
@@ -35,11 +36,29 @@ const redirectToGoogleMaps = () => {
   window.open('https://maps.app.goo.gl/3hh1pJWFbBhMSJ5A7', '_blank');
 };
 
+const openFB = () => {
+  window.open('https://www.facebook.com', '_blank');
+}
+
+const openIG = () => {
+  window.open('https://www.instagram.com/rackie707?igsh=YjRwOHU2M2NhaDZs&utm_source=qr', '_blank');
+}
+
+const openTWT = () => {
+  window.open('https://www.x.com', '_blank');
+}
+
+
 onMounted(() => {
-  tooltipVisible.value = false;
   // Leer rol desde localStorage
   rol.value = localStorage.getItem('rol');
   console.log(rol.value)
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    isLogged.value = true;
+  }
+  tooltipVisible.value = false;
 });
 </script>
 
@@ -56,21 +75,21 @@ onMounted(() => {
         </v-col>
         <v-col cols="11" class="d-flex justify-end">
         <v-btn
-            v-if="!rol"
+            v-if="isLogged"
             class="app-bar-login-btn"
             size="large"
             elevation="3"
             to="/login"
         >Acceder</v-btn>
         <v-btn
-            v-if="!rol"
+            v-if="isLogged"
             class="app-bar-register-btn"
             size="large"
             elevation="3"
             to="/register"
         >Crear cuenta</v-btn>
         <v-btn
-            v-if="rol"
+            v-if="!isLogged"
             class="app-bar-login-btn"
             size="large"
             elevation="3"
@@ -92,15 +111,15 @@ onMounted(() => {
           <v-list-item-title class="nav-item">Inicio</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/login" v-if="!rol">
+        <v-list-item to="/login" v-if="isLogged">
           <v-list-item-title class="nav-item">Acceder</v-list-item-title>
         </v-list-item>
 
-        <v-list-item to="/register" v-if="!rol">
+        <v-list-item to="/register" v-if="isLogged">
           <v-list-item-title class="nav-item">Crear cuenta</v-list-item-title>
         </v-list-item>
 
-        <v-list-item @click="logout" v-if="rol">
+        <v-list-item @click="logout" v-if="!isLogged">
           <v-list-item-title class="nav-item">Cerrar sesión</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -120,9 +139,9 @@ onMounted(() => {
           <p class="footer-title">Síguenos en nuestras redes sociales</p>
         </v-row>
         <v-row class="pt-2">
-          <v-btn class="social-media" icon="mdi-facebook" color="#E7ECF3" variant="text"/>
-          <v-btn class="social-media" icon="mdi-instagram" color="#E7ECF3" variant="text"/>
-          <v-btn class="social-media" icon="mdi-twitter" color="#E7ECF3" variant="text"/>
+          <v-btn class="social-media" icon="mdi-facebook" color="#E7ECF3" variant="text" @click="openFB"/>
+          <v-btn class="social-media" icon="mdi-instagram" color="#E7ECF3" variant="text" @cllck="openIG"/>
+          <v-btn class="social-media" icon="mdi-twitter" color="#E7ECF3" variant="text" @click="openTWT"/>
         </v-row>
       </v-col>
       <v-col cols="12" sm="5">
@@ -130,7 +149,7 @@ onMounted(() => {
           <p class="footer-title">Contáctanos</p>
         </v-row>
         <v-row class="pt-3">
-          <v-tooltip class="map-tooltip" interactive location="top" :open-delay="500" v-model="tooltipVisible">
+          <v-tooltip class="map-tooltip" interactive location="top" :open-delay="500" v-model="tooltipVisible" >
             <template v-slot:activator="{ props: activatorProps }">
               <v-icon
                 v-bind="activatorProps"
