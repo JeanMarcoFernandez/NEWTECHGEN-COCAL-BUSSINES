@@ -71,6 +71,6 @@ export async function verificarCambioIP(user, nuevaIp, userAgent = 'unknown') {
     }).eq('id', user.id);
 
   } catch (err) {
-    console.error('❌ Error en verificarCambioIP:', err.message);
+    console.error(' Error en verificarCambioIP:', err.message);
   }
 }
