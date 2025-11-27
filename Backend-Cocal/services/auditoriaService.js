@@ -19,6 +19,6 @@ export async function registrarAuditoria({
       user_agent
     }]);
   } catch (err) {
-    console.error('❌ Error al registrar auditoría:', err.message);
+    console.error(' Error al registrar auditoría:', err.message);
   }
 }
