@@ -14,6 +14,9 @@ import seguridadRoutes from './routes/seguridadRoutes.js';
 import auditoriaRoutes from './routes/auditoriaRoutes.js';
 import twoFactorRoutes from "./routes/twoFactorRoutes.js";
 import restablecerContrasenaRoutes from './routes/restablecerContrasenaRoutes.js';
+import proyectosRoutes from './routes/proyectosRoutes.js';
+import miembrosProyectoRoutes from './routes/miembrosProyectoRoutes.js';
+import usuariosMiembrosRoutes from './routes/usuariosMiembrosRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -30,6 +33,9 @@ app.use('/api/seguridad', seguridadRoutes);
 app.use('/api/auditoria', auditoriaRoutes);
 app.use("/api/auth", twoFactorRoutes);
 app.use('/api/contrasena', restablecerContrasenaRoutes);
+app.use('/api/proyectos', proyectosRoutes);
+app.use('/api/miembros-proyecto', miembrosProyectoRoutes);
+app.use('/api/usuarios-miembros', usuariosMiembrosRoutes);
 //Swagger
 configurarSwagger(app);
 
