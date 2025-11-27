@@ -32,7 +32,7 @@ async function verifyCode() {
     localStorage.setItem("usuario", JSON.stringify(data.usuario));
     localStorage.setItem("rol", data.usuario.rol);
 
-    router.push("/");
+    router.push("/home");
   } catch (err) {
     error.value = err.response?.data?.message || "Error al verificar el código.";
     snackbarError.value = true;
