@@ -21,6 +21,7 @@ import administracionEmpresaDepartamentoRoutes from './routes/administracionEmpr
 import calendarioUsuarioRoutes from './routes/calendarioUsuarioRoutes.js';
 import calendarioEmpresaRoutes from './routes/calendarioEmpresaRoutes.js';
 import calendarioDepartamentoRoutes from './routes/calendarioDepartamentoRoutes.js';
+import calendarioVinculoRoutes from './routes/calendarioVinculoRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -44,6 +45,7 @@ app.use('/api/admin/empresa-departamento', administracionEmpresaDepartamentoRout
 app.use('/api/calendarios/usuario', calendarioUsuarioRoutes);
 app.use('/api/calendarios/empresa', calendarioEmpresaRoutes);
 app.use('/api/calendarios/departamento', calendarioDepartamentoRoutes);
+app.use('/api/calendarios/vinculos', calendarioVinculoRoutes);
 //Swagger
 configurarSwagger(app);
 
