@@ -2,7 +2,7 @@ import {
   agregarDepartamentoAProyecto,
   getDepartamentosPorProyecto,
   agregarMiembroAProyecto
-} from "../models/proyectoModel.js";
+} from "../models/proyectoMiembrosModel.js";
 
 export const asignarDepartamentoAProyecto = async (req, res) => {
   try {

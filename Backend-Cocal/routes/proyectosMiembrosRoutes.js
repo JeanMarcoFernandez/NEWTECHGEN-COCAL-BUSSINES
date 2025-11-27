@@ -1,22 +1,22 @@
 import { Router } from "express";
-import { asignarDepartamentoAProyecto, verDepartamentosDelProyecto, agregarMiembro } from "../controllers/proyectosController.js";
+import { asignarDepartamentoAProyecto, verDepartamentosDelProyecto, agregarMiembro } from "../controllers/proyectosMiembrosController.js";
 import { verificarToken} from "../middleware/verificarToken.js";
 import { validarRol } from "../middleware/validarRol.js"; 
 const router = Router();
 /**
  * @swagger
  * tags:
- *   name: Proyectos
+ *   name: Proyectos Miembros
  *   description: Gestión de departamentos y miembros dentro de proyectos.
  */
 
 /**
  * @swagger
- * /api/proyectos/departamento:
+ * /api/proyectos-miembros/departamento:
  *   put:
  *     summary: Asignar departamento a un proyecto
  *     description: Permite asignar un departamento existente a un proyecto específico.
- *     tags: [Proyectos]
+ *     tags: [Proyectos Miembros]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -50,11 +50,11 @@ const router = Router();
 router.put("/departamento", verificarToken, validarRol("ADMIN", "SUPERVISOR"), asignarDepartamentoAProyecto);
 /**
  * @swagger
- * /api/proyectos/departamentos/{id_proyecto}:
+ * /api/proyectos-miembros/departamentos/{id_proyecto}:
  *   get:
  *     summary: Ver departamentos de un proyecto
  *     description: Retorna los departamentos asignados a un proyecto específico.
- *     tags: [Proyectos]
+ *     tags: [Proyectos Miembros]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -79,11 +79,11 @@ router.put("/departamento", verificarToken, validarRol("ADMIN", "SUPERVISOR"), a
 router.get("/departamentos/:id_proyecto", verificarToken, verDepartamentosDelProyecto);
 /**
  * @swagger
- * /api/proyectos/miembro:
+ * /api/proyectos-miembros/miembro:
  *   post:
  *     summary: Agregar miembro a un proyecto
  *     description: Permite agregar un usuario como miembro de un proyecto con un rol específico.
- *     tags: [Proyectos]
+ *     tags: [Proyectos Miembros]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
