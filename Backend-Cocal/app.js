@@ -17,6 +17,14 @@ import restablecerContrasenaRoutes from './routes/restablecerContrasenaRoutes.js
 import proyectosMiembrosRoutes from './routes/proyectosMiembrosRoutes.js';
 import miembrosProyectoRoutes from './routes/miembrosProyectoRoutes.js';
 import usuariosMiembrosRoutes from './routes/usuariosMiembrosRoutes.js';
+import empresaRoutes from './routes/empresaRoutes.js';
+import departamentoRoutes from './routes/departamentoRoutes.js';
+import proyectoRoutes from './routes/proyectoRoutes.js';
+import administracionEmpresaDepartamentoRoutes from './routes/administracionEmpresaDepartamentoRoutes.js';
+import calendarioUsuarioRoutes from './routes/calendarioUsuarioRoutes.js';
+import calendarioEmpresaRoutes from './routes/calendarioEmpresaRoutes.js';
+import calendarioDepartamentoRoutes from './routes/calendarioDepartamentoRoutes.js';
+import calendarioVinculoRoutes from './routes/calendarioVinculoRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -36,6 +44,14 @@ app.use('/api/contrasena', restablecerContrasenaRoutes);
 app.use('/api/proyectos-miembros', proyectosMiembrosRoutes);
 app.use('/api/miembros-proyecto', miembrosProyectoRoutes);
 app.use('/api/usuarios-miembros', usuariosMiembrosRoutes);
+app.use('/api/empresas', empresaRoutes);
+app.use('/api/departamentos', departamentoRoutes);
+app.use('/api/proyectos', proyectoRoutes);
+app.use('/api/admin/empresa-departamento', administracionEmpresaDepartamentoRoutes);
+app.use('/api/calendarios/usuario', calendarioUsuarioRoutes);
+app.use('/api/calendarios/empresa', calendarioEmpresaRoutes);
+app.use('/api/calendarios/departamento', calendarioDepartamentoRoutes);
+app.use('/api/calendarios/vinculos', calendarioVinculoRoutes);
 //Swagger
 configurarSwagger(app);
 
