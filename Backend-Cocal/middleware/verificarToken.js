@@ -9,10 +9,7 @@ export function verificarToken(req, res, next) {
     if (!authHeader) {
       return res.status(401).json({ message: 'Token no proporcionado.' })
     }
-
     const token = authHeader.split(' ')[1]
-
-    
     let decoded
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -29,7 +26,7 @@ export function verificarToken(req, res, next) {
     const ahora = Date.now()
     const ultimaActividad = decoded.ultimaActividad || ahora
     const tiempoInactivo = (ahora - ultimaActividad) / 1000 / 60 // en minutos
-    const LIMITE_INACTIVIDAD = 1
+    const LIMITE_INACTIVIDAD = 30
 
     if (tiempoInactivo > LIMITE_INACTIVIDAD) {
       console.log('Token expirado por inactividad')
