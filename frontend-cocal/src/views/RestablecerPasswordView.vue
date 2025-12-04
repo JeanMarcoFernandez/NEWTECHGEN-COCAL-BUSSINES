@@ -2,7 +2,7 @@
   <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-200">
     <div class="bg-white p-8 rounded-2xl shadow-lg w-96">
       <h2 class="text-center text-xl font-bold mb-6 text-gray-800">
-        🔐 Restablecer contraseña
+         Restablecer contraseña
       </h2>
 
       <form @submit.prevent="restablecer" class="space-y-4">

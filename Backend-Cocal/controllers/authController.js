@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import { supabase } from '../db.js';
 import dotenv from 'dotenv';
 import { registrarAuditoria } from '../services/auditoriaService.js';
-import { generarToken } from '../utils/generarToken.js';
 import { getClientIp, getUserAgent } from '../utils/requestInfo.js';
 import {
   incrementarIntentoFallido,
@@ -114,7 +113,7 @@ export async function loginUsuario(req, res) {
 
     await resetearIntentos(user.id);
 
-    await verificarCambioIP(user, ip);
+    await verificarCambioIP(user, ip, userAgent);
 
     await registrarAuditoria({
       usuario_id: user.id,
@@ -132,7 +131,7 @@ export async function loginUsuario(req, res) {
       });
     }
 
-    // 🔐 Enviar código 2FA automáticamente (reutilizando tu controlador)
+    
     await enviarCodigo2FA(user.id, user.correo, user.nombre);
 
     return res.status(200).json({
