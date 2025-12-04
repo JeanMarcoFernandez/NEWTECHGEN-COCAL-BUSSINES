@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { verificarToken } from '../middleware/verificarToken.js';
 import { validarRol } from '../middleware/validarRol.js';
-
+import { validarPermisoGranular } from '../middleware/validarPermisoGranular.js';
 import {
   crearCalendarioEmpresaController,
   listarCalendariosEmpresaProyectoController,
@@ -122,6 +122,7 @@ router.post(
   '/proyecto/:idProyecto',
   verificarToken,
   validarRol('ADMIN'),
+  validarPermisoGranular('GESTION_CALENDARIO_EMPRESA', 'EMPRESA'),
   crearCalendarioEmpresaController,
 );
 
@@ -219,6 +220,7 @@ router.post(
   '/:idCalendario/eventos',
   verificarToken,
   validarRol('ADMIN'),
+  validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   crearEventoEmpresaController,
 );
 
@@ -314,7 +316,7 @@ router.get(
 router.patch(
   '/eventos/:idEvento',
   verificarToken,
-  validarRol('ADMIN'),
+  validarRol('ADMIN'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   actualizarEventoEmpresaController,
 );
 
@@ -347,6 +349,7 @@ router.delete(
   '/eventos/:idEvento',
   verificarToken,
   validarRol('ADMIN'),
+  validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   eliminarEventoEmpresaController,
 );
 
