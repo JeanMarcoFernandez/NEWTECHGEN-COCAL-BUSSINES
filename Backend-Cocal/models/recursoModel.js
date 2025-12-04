@@ -14,21 +14,26 @@ export async function crearRecursoDB(payload) {
 }
 
 // Listar recursos con filtros básicos (empresa, departamento, tipo, visibilidad)
+// Listar recursos con filtros básicos (empresa, departamento, tipo, visibilidad)
 export async function listarRecursosDB(filtros = {}) {
   let query = supabase.from('recurso').select('*');
 
   if (filtros.id_empresa) {
     query = query.eq('id_empresa', filtros.id_empresa);
   }
-  if (filtros.id_departamento) {
-    query = query.eq('id_departamento', filtros.id_departamento);
+
+  if (filtros.id_departamento !== null && !isNaN(filtros.id_departamento)) {
+    query = query.eq('id_departamento', Number(filtros.id_departamento));
   }
+
   if (filtros.tipo) {
     query = query.eq('tipo', filtros.tipo);
   }
+
   if (filtros.visibilidad) {
     query = query.eq('visibilidad', filtros.visibilidad);
   }
+
   if (typeof filtros.en_mantenimiento === 'boolean') {
     query = query.eq('en_mantenimiento', filtros.en_mantenimiento);
   }
@@ -38,6 +43,7 @@ export async function listarRecursosDB(filtros = {}) {
   if (error) throw error;
   return data;
 }
+
 
 // Obtener recurso por ID
 export async function obtenerRecursoPorIdDB(id) {

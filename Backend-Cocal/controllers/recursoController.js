@@ -82,7 +82,6 @@ export async function cambiarEstadoMantenimientoController(req, res) {
       });
   }
 }
-
 // GET /api/recursos/disponibles
 export async function recursosDisponiblesController(req, res) {
   try {
@@ -102,20 +101,28 @@ export async function recursosDisponiblesController(req, res) {
         .json({ message: 'fecha_inicio y fecha_fin son obligatorios.' });
     }
 
+    // CORRECCIÓN DEFINITIVA ÉPICA 🔥
+    const capacidadMin = isNaN(parseInt(capacidad_minima))
+      ? null
+      : parseInt(capacidad_minima);
+
+    const departamentoMin = isNaN(parseInt(id_departamento))
+      ? null
+      : parseInt(id_departamento);
+
     const resultado = await buscarRecursosDisponiblesService(
       {
         fecha_inicio,
         fecha_fin,
         tipo,
-        capacidad_minima: capacidad_minima
-          ? Number(capacidad_minima)
-          : undefined,
-        id_departamento: id_departamento ? Number(id_departamento) : undefined
+        capacidad_minima: capacidadMin,
+        id_departamento: departamentoMin
       },
       usuario
     );
 
     return res.json(resultado);
+
   } catch (err) {
     console.error('Error recursosDisponiblesController:', err);
     return res

@@ -158,6 +158,76 @@ router.get(
   verificarToken,
   listarRecursosController
 );
+/**
+ * @swagger
+ * /api/recursos/disponibles:
+ *   get:
+ *     summary: Consultar recursos disponibles en un rango de tiempo
+ *     description: >
+ *       Devuelve qué recursos están disponibles y cuáles tienen conflictos en el rango dado.  
+ *       **HU-04** – criterios 1, 3 (disponibilidad y sugerencias).
+ *     tags: [HU-04]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: fecha_inicio
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: fecha_fin
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *         description: Filtrar por tipo de recurso
+ *       - in: query
+ *         name: capacidad_minima
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: id_departamento
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Recursos disponibles y ocupados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 disponibles:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Recurso'
+ *                 ocupados:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       recurso:
+ *                         $ref: '#/components/schemas/Recurso'
+ *                       reservas_conflictivas:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *       400:
+ *         description: Falta fecha_inicio o fecha_fin
+ *       401:
+ *         description: No autenticado
+ */
+router.get(
+  '/disponibles',
+  verificarToken,
+  recursosDisponiblesController
+);
 
 /**
  * @swagger
@@ -242,75 +312,5 @@ router.put(
   cambiarEstadoMantenimientoController
 );
 
-/**
- * @swagger
- * /api/recursos/disponibles:
- *   get:
- *     summary: Consultar recursos disponibles en un rango de tiempo
- *     description: >
- *       Devuelve qué recursos están disponibles y cuáles tienen conflictos en el rango dado.  
- *       **HU-04** – criterios 1, 3 (disponibilidad y sugerencias).
- *     tags: [HU-04]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: fecha_inicio
- *         required: true
- *         schema:
- *           type: string
- *           format: date-time
- *       - in: query
- *         name: fecha_fin
- *         required: true
- *         schema:
- *           type: string
- *           format: date-time
- *       - in: query
- *         name: tipo
- *         schema:
- *           type: string
- *         description: Filtrar por tipo de recurso
- *       - in: query
- *         name: capacidad_minima
- *         schema:
- *           type: integer
- *       - in: query
- *         name: id_departamento
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Recursos disponibles y ocupados
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 disponibles:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Recurso'
- *                 ocupados:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       recurso:
- *                         $ref: '#/components/schemas/Recurso'
- *                       reservas_conflictivas:
- *                         type: array
- *                         items:
- *                           type: object
- *       400:
- *         description: Falta fecha_inicio o fecha_fin
- *       401:
- *         description: No autenticado
- */
-router.get(
-  '/disponibles',
-  verificarToken,
-  recursosDisponiblesController
-);
 
 export default router;
