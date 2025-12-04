@@ -1,5 +1,8 @@
 // middleware/validarPermisoGranular.js
-import { tienePermisoGranular } from '../models/permisoModel.js';
+import {
+  tienePermisoGranular,
+  registrarLogSeguridadDB,
+} from '../models/permisoModel.js';
 
 /**
  * Middleware de permisos granulares (HU-010)
@@ -31,7 +34,6 @@ export function validarPermisoGranular(clavePermiso, ambito) {
         idProyecto:
           req.body.id_proyecto ||
           req.params.idProyecto ||
-          req.params.idProyecto ||
           null,
       };
 
@@ -43,7 +45,22 @@ export function validarPermisoGranular(clavePermiso, ambito) {
       );
 
       if (!permitido) {
-        // Aquí podrías llamar a registrarLogSeguridadDB(...) si quieres HU-010.8
+        // 🔐 HU-010.8: registrar acceso NO autorizado en log_seguridad
+        try {
+          await registrarLogSeguridadDB({
+            id_usuario: idUsuario,
+            permiso: clavePermiso,
+            ambito, // opcional, si tu tabla lo tiene
+            ruta: req.originalUrl,
+            metodo: req.method,
+            ip: req.ip,
+            user_agent: req.headers['user-agent'],
+            motivo: 'ACCESO_NO_AUTORIZADO',
+          });
+        } catch (e) {
+          console.error('Error registrando log de seguridad:', e.message);
+        }
+
         return res.status(403).json({
           message: `Acceso denegado: falta permiso ${clavePermiso} en ámbito ${ambito}`,
         });

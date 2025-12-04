@@ -17,7 +17,7 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   name: Permisos HU-10
+ *   name: Permisos
  *   description: Gestión de permisos granulares por equipo (HU-010)
  */
 
