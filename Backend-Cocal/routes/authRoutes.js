@@ -25,11 +25,15 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
+ *               - id_empresa
  *               - correo
  *               - contrasena
  *               - nombre
  *               - apellido
  *             properties:
+ *               id_empresa:
+ *                 type: integer
+ *                 example: 1
  *               correo:
  *                 type: string
  *                 format: email

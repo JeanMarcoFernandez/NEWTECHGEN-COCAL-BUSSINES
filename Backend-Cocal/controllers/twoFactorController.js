@@ -76,6 +76,7 @@ export async function verificarCodigo2FA(req, res) {
   id: user.id,
   rol: user.rol,
   correo: user.correo,
+  id_empresa: user.id_empresa, 
   ultimaActividad: Date.now()
 });
 
@@ -94,6 +95,7 @@ export async function verificarCodigo2FA(req, res) {
         id: user.id,
         nombre: user.nombre,
         correo: user.correo,
+        id_empresa: user.id_empresa, 
         rol: user.rol,
       },
       expira_en: "30 minutos"
