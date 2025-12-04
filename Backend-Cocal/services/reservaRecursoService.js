@@ -8,7 +8,9 @@ import {
   listarReservasParaLiberarDB
 } from '../models/reservaRecursoModel.js';
 
-import { obtenerRecursoPorIdDB } from '../models/recursoModel.js';
+import { obtenerRecursoPorIdDB,
+        listarRecursosDB 
+ } from '../models/recursoModel.js';
 
 // Crear reserva (Empleado)
 export async function crearReservaRecursoService(payload, usuarioContexto) {
@@ -51,12 +53,40 @@ export async function crearReservaRecursoService(payload, usuarioContexto) {
     fecha_fin: finAjustado.toISOString()
   });
 
-  if (solapadas.length > 0) {
-    // Aquí podríamos sugerir recursos alternativos en otra API.
+   if (solapadas.length > 0) {
+    // HU-4.3: sugerir recursos alternativos en el MISMO flujo
+    // 1) Buscamos recursos candidatos en la misma empresa, mismo tipo, no en mantenimiento
+    const candidatos = await listarRecursosDB({
+      id_empresa,
+      tipo: recurso.tipo,
+      en_mantenimiento: false
+    });
+
+    const recursosAlternativos = [];
+
+    // 2) Para cada candidato, verificamos si está libre en el mismo rango
+    for (const rec of candidatos) {
+      // Saltamos el mismo recurso original
+      if (rec.id === recurso.id) continue;
+
+      const solapadasAlt = await buscarReservasSolapadasDB({
+        id_recurso: rec.id,
+        fecha_inicio: inicio.toISOString(),
+        fecha_fin: finAjustado.toISOString()
+      });
+
+      if (solapadasAlt.length === 0) {
+        recursosAlternativos.push(rec);
+      }
+    }
+
     throw {
       status: 409,
       message: 'El recurso no está disponible en ese rango de fechas.',
-      detalles: { reservas_conflictivas: solapadas }
+      detalles: {
+        reservas_conflictivas: solapadas,
+        recursos_alternativos: recursosAlternativos
+      }
     };
   }
 
