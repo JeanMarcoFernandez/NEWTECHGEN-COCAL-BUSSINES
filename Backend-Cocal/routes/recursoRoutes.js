@@ -16,8 +16,6 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Recursos
- *     description: Gestión de recursos corporativos (HU-04, HU-015, HU-016)
  *   - name: HU-04
  *     description: Sistema de asignación de recursos y disponibilidad
  */
@@ -82,7 +80,7 @@ const router = Router();
  *     description: >
  *       Crea un recurso (sala, equipo, vehículo, etc.) asociado a la empresa del usuario autenticado.  
  *       **HU-04** – Sistema de asignación de recursos y disponibilidad.
- *     tags: [Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -120,7 +118,7 @@ router.post(
  *     description: >
  *       Lista recursos filtrando por tipo, departamento, visibilidad o mantenimiento.  
  *       **HU-04** – ver qué recursos hay disponibles en la empresa.
- *     tags: [Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -167,7 +165,7 @@ router.get(
  *   get:
  *     summary: Obtener recurso por ID
  *     description: Devuelve la información de un recurso de la empresa del usuario.
- *     tags: [Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -202,7 +200,7 @@ router.get(
  *     description: >
  *       Permite marcar o desmarcar un recurso como en mantenimiento.  
  *       Relacionado con HU-04 (criterio 6) y HU-016.
- *     tags: [Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -252,7 +250,7 @@ router.put(
  *     description: >
  *       Devuelve qué recursos están disponibles y cuáles tienen conflictos en el rango dado.  
  *       **HU-04** – criterios 1, 3 (disponibilidad y sugerencias).
- *     tags: [Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:

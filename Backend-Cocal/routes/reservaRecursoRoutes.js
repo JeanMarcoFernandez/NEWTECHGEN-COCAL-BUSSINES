@@ -18,8 +18,8 @@ const router = Router();
 /**
  * @swagger
  * tags:
- *   - name: Reservas de Recursos
- *     description: Reservas, aprobación, check-in/out y liberación (HU-04, HU-011, HU-012, HU-017)
+ *   - name: HU-04
+ *     description: Reservas y asignación de recursos (HU-04, HU-011, HU-012, HU-017)
  */
 
 /**
@@ -81,7 +81,7 @@ const router = Router();
  *     description: >
  *       Crea una nueva reserva de recurso en estado **PENDIENTE_APROBACION**.  
  *       Valida conflictos, mantenimiento y tiempo máximo (HU-04 criterios 2, 3 y 7).
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -123,7 +123,7 @@ router.post(
  *     description: >
  *       El solicitante o un rol elevado (ADMIN/SUPERVISOR/RRHH) puede cancelar una reserva.  
  *       Relacionado con HU-04 criterio 4.
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -162,7 +162,7 @@ router.put(
  *     description: >
  *       Permite aprobar o rechazar una reserva pendiente.  
  *       Úsalo para el flujo de aprobación de salas/equipos (HU-04.2 y HU-012/HU-017).
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -215,7 +215,7 @@ router.put(
  *     description: >
  *       El solicitante marca que empezó a usar el recurso (estado pasa a EN_USO).  
  *       Relacionado con HU-04 (control de uso real del recurso).
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -253,7 +253,7 @@ router.put(
  *     summary: Registrar check-out de una reserva
  *     description: >
  *       El solicitante marca que terminó de usar el recurso (estado pasa a FINALIZADA).
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -292,7 +292,7 @@ router.put(
  *     description: >
  *       Permite filtrar el historial por recurso, solicitante, aprobador, estado y rango de fechas.  
  *       **HU-04.5** – historial de uso por período.
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -348,7 +348,7 @@ router.get(
  *     description: >
  *       Marca como EXPIRADA las reservas aprobadas donde no se hizo check-in y ya pasaron X minutos desde la hora de inicio (por defecto 15).  
  *       Implementa HU-04 criterio 8 (liberar recursos no utilizados).
- *     tags: [Reservas de Recursos, HU-04]
+ *     tags: [HU-04]
  *     security:
  *       - bearerAuth: []
  *     parameters:
