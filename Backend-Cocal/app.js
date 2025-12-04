@@ -26,6 +26,7 @@ import recursoRoutes from './routes/recursoRoutes.js';
 import reservaRecursoRoutes from './routes/reservaRecursoRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import recurso15Routes from './routes/recurso15Routes.js';
+import mantenimientoRoutes from './routes/mantenimientoRoutes.js';
 
 const app = express();
 
@@ -55,7 +56,9 @@ app.use('/api/recursos', recursoRoutes);
 app.use('/api/reservas-recursos', reservaRecursoRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurso15', recurso15Routes);
+app.use('/api/mantenimiento', mantenimientoRoutes);
 //Swagger
 configurarSwagger(app);
+
 
 export default app;

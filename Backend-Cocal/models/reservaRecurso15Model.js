@@ -23,5 +23,20 @@ export const reservaRecurso15Model = {
       .select('*')
       .or(`and(fecha_inicio.lte.${fecha_fin},fecha_fin.gte.${fecha_inicio})`);
     return { reservas, error };
+  },
+
+   // Cancela todas las reservas futuras de un recurso
+  async cancelarReservasFuturas(id_recurso) {
+    const ahora = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('reserva_recurso')
+      .update({ estado: 'CANCELADA' })
+      .eq('id_recurso', id_recurso)
+      .gt('fecha_inicio', ahora)
+      .select();
+
+    if (error) throw new Error(error.message);
+    return data;
   }
 };
