@@ -1,30 +1,6 @@
 <script setup>
-import { RouterView, RouterLink, useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, watch  } from 'vue'
-
-const router = useRouter()
-
-const drawer = ref(false);
-
-const route = useRoute();
-const showAppBar = ref(true);
-const rol = ref(null);
-const isLogged = ref(false);
-
-const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('rol'); // Limpiar rol
-
-  rol.value = null
-  router.push('/login');
-};
-
-watch(
-  () => route.path, 
-  (newPath) => {
-    showAppBar.value = !['/login', '/register', '/forgotPassword', '/password/first-login', '/verify-2fa', '/restablish/', '/create-user'].includes(newPath);
-  }
-);
+import { RouterView } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
 const tooltipVisible = ref(false);
 
@@ -50,81 +26,15 @@ const openTWT = () => {
 
 
 onMounted(() => {
-  // Leer rol desde localStorage
-  rol.value = localStorage.getItem('rol');
-  console.log(rol.value)
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    isLogged.value = true;
-  }
   tooltipVisible.value = false;
 });
+
 </script>
 
 <template>
 
 <v-app>
-  <v-app-bar v-if="showAppBar" class="appbar pa-5" flat scroll-behavior="fully-hide" scroll-threshold="100" color="transparent">
-    <v-app-bar-nav-icon @click="drawer = !drawer" class="hidden-md-and-up"></v-app-bar-nav-icon>
-    <v-row class="align-center hidden-sm-and-down">
-        <v-col cols="1" class="justify-start">
-        <router-link to="/">
-            <v-img src="/assets/ntg_logo_transparent.png" max-height="100" class="rounded-lg"/> 
-        </router-link>
-        </v-col>
-        <v-col cols="11" class="d-flex justify-end">
-        <v-btn
-            v-if="isLogged"
-            class="app-bar-login-btn"
-            size="large"
-            elevation="3"
-            to="/login"
-        >Acceder</v-btn>
-        <v-btn
-            v-if="isLogged"
-            class="app-bar-register-btn"
-            size="large"
-            elevation="3"
-            to="/register"
-        >Crear cuenta</v-btn>
-        <v-btn
-            v-if="!isLogged"
-            class="app-bar-login-btn"
-            size="large"
-            elevation="3"
-            @click="logout"
-        >Cerrar sesión</v-btn>
-        </v-col>
-      </v-row>
-  </v-app-bar>
-
-  <v-navigation-drawer
-      v-model="drawer"
-      app
-      class="hidden-md-and-up"
-      hidden
-      color="#3159ae"
-    >
-      <v-list nav dense>
-        <v-list-item to="/" exact>
-          <v-list-item-title class="nav-item">Inicio</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item to="/login" v-if="isLogged">
-          <v-list-item-title class="nav-item">Acceder</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item to="/register" v-if="isLogged">
-          <v-list-item-title class="nav-item">Crear cuenta</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item @click="logout" v-if="!isLogged">
-          <v-list-item-title class="nav-item">Cerrar sesión</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
+  
   <v-main class="d-flex flex-column justify-center align-center pa-0 ma-0">
     <RouterView />
   </v-main>
@@ -199,10 +109,10 @@ onMounted(() => {
 </template>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Slabo+27px&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Slabo+27px&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap'); /*Tinos*/
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap'); /*Funnel Display*/
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap'); /*Zalando Sans*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap'); /*Roboto Flex*/
 
 .v-main {
   background-color: #F1F0EC;
@@ -211,49 +121,6 @@ onMounted(() => {
 </style>
 
 <style scoped>
-
-.app-bar-login-btn, .app-bar-register-btn {
-  font-family: 'Funnel Display', sans-serif;
-  border-radius: 15px;
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  outline: none; 
-}
-.app-bar-login-btn {
-  color: #E7ECF3;
-  background-color: #183581;
-  border: 2px solid transparent;
-}
-
-.app-bar-login-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-color: #183581;
-}
-
-.app-bar-register-btn {
-  color: #183581;
-  background-color: #E7ECF3;
-  border: 2px solid transparent;
-}
-
-.app-bar-register-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-color: #E7ECF3;
-}
-
-.nav-item {
-  font-family: 'Tinos', sans-serif;
-  font-size: medium;
-  color: #E7ECF3;
-}
-
 .v-footer{
   min-height: 200px;
   background: linear-gradient(120deg, #061244, #183581);

@@ -1,54 +1,57 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import { verificar2FA, reenviar2FA } from "../api/auth.js";
+import { changePasswordFirstLogin } from '../../api/auth.js'
 
-const route = useRoute();
-const router = useRouter();
+const router = useRouter()
 
-const correo = route.query.correo || "";
-const usuario_id = route.query.usuario_id || "";
-const nombre = route.query.nombre || "";
-
-const codigo = ref(null)
-const message = ref('')
+const newContrasena = ref('')
+const showPassword1 = ref(false)
+const showPassword2 = ref(false)
 const error = ref('')
+const message = ref('')
+const correo = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
-async function verifyCode() {
+const changeForm = ref()
+
+onMounted(() => {
+  // 🔹 Recuperar el correo guardado por el LoginView
+  correo.value = localStorage.getItem('correo_cambio') || ''
+})
+
+const handleChange = async () => {
   snackbar.value = false
   snackbarError.value = false
   error.value = ''
   message.value = ''
   loading.value = true
-
-  try {
-    const { data } = await verificar2FA(correo, codigo.value);
-    message.value = "Verificación exitosa. Redirigiendo...";
-    snackbar.value = true
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("usuario", JSON.stringify(data.usuario));
-    localStorage.setItem("rol", data.usuario.rol);
-
-    router.push("/home");
-  } catch (err) {
-    error.value = err.response?.data?.message || "Error al verificar el código.";
-    snackbarError.value = true;
-  } finally {
-    loading.value = false;
+  
+  if (!correo.value) {
+    error.value = 'Error: No se encontró el correo del usuario. Vuelve a iniciar sesión.'
+    snackbarError.value = true
+    router.push('/login')
+    return
   }
-}
 
-async function resend() {
   try {
-    await reenviar2FA(usuario_id, correo, nombre);
-    message.value = "Nuevo código enviado al correo.";
+    console.log('Enviando:', { correo: correo.value, nuevaContrasena: newContrasena.value })
+    const { data } = await changePasswordFirstLogin(correo.value, newContrasena.value)
+    message.value = data.message || 'Contraseña cambiada exitosamente.'
     snackbar.value = true
+
+    // limpiar datos y redirigir
+    localStorage.removeItem('correo_cambio')
+    changeForm.value.reset()
+    router.push('/login')
   } catch (err) {
-    error.value = "No se pudo reenviar el código.";
-    snackbarError.value = true;
+    console.error('Error al cambiar contraseña:', err.response?.data || err)
+    error.value = err.response?.data?.message || 'Error al cambiar la contraseña.'
+    snackbarError.value = true
+  } finally {
+    loading.value = false
   }
 }
 
@@ -57,23 +60,43 @@ async function resend() {
 <template>
   <v-container fluid class="reset-page">
     <v-card class="reset-card" elevation="3">
-        <v-card-title class="reset-title">Verificación de dos pasos</v-card-title>
-        <v-form ref="resetForm" @submit.prevent="verifyCode">
+        <v-card-title class="reset-title">Cambia tu contraseña</v-card-title>
+        <v-form ref="changeForm" @submit.prevent="handleChange">
             <v-row class="px-4 pb-6">
                 <p>
-                    Ingresa el código de verificación enviado a tu correo electrónico.
+                    Por motivos de seguridad, debes cambiar tu contraseña antes de continuar.
                 </p>
             </v-row>
             <v-row>
-                <v-text-field
-                v-model="codigo"
-                type="number"
-                :rules="[
-                    v => !!v || 'Este campo no puede estar vacío.',
-                    v => /^[0-9]{6}$/.test(v) || 'El código debe tener 6 dígitos.']"
-                class="reset-input"
-                variant="outlined"
-            />
+                <v-col cols="12">
+                    <v-text-field
+                    v-model="newContrasena"
+                    label="Contraseña"
+                    :type="showPassword1 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v.length >= 8 || 'La contraseña debe tener al menos 8 caracteres.'
+                    ]"
+                    :append-inner-icon="showPassword1 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword1 = !showPassword1"
+                    required
+                    />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                    <v-text-field
+                    label="Confirmar Contraseña"
+                    :type="showPassword2 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v === newContrasena || 'Las contraseñas no coinciden.'
+                    ]"
+                    :append-inner-icon="showPassword2 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword2 = !showPassword2"
+                    required
+                    />
+                </v-col>
             </v-row>
             <v-row class="py-4">
                 <v-btn
@@ -83,21 +106,10 @@ async function resend() {
                 block
                 rounded
                 >
-                Enviar
-              </v-btn>
+                Cambiar contraseña
+                </v-btn>
             </v-row>
         </v-form>
-        <v-row class="py-4">
-            <v-btn
-            class="reset-btn"
-            :loading="loading"
-            block
-            rounded
-            @click="resend"
-            >
-            Reenviar código
-          </v-btn>
-        </v-row>
     </v-card>
     <v-snackbar v-model="snackbar" :timeout="4000" color="#A0B5E4" top>
       <span class="snackbar-message">{{ message }}</span>
