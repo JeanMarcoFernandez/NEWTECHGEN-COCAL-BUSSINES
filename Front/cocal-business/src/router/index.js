@@ -15,6 +15,7 @@ import CreateUser from '@/components/Login/CreateUser.vue'
 
 import MyCalendar from '@/components/Calendar/MyCalendar.vue'
 import GroupCalendar from '@/components/Calendar/GroupCalendar.vue'
+import Resources from '@/components/Calendar/Resources.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,7 +45,8 @@ const router = createRouter({
       component: CalendarLayout,
       children: [
         { path: '', name: 'MyCalendar', component: MyCalendar },
-        { path: '/groups', name: 'Grupos', component:  GroupCalendar}
+        { path: '/groups', name: 'Grupos', component:  GroupCalendar},
+        { path: '/resources', name: 'Recursos', component:  Resources}
       ]
     },
     {

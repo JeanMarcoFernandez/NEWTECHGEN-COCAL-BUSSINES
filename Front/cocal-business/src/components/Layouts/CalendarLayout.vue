@@ -27,7 +27,7 @@ const navItems = ref([
   {
     title: 'Recursos',
     icon: 'mdi-projector',
-    to: '/',
+    to: '/resources',
     subtitle: 'Administración de recursos',
     roles: ['ADMIN', 'EMPLEADO'] 
   },
