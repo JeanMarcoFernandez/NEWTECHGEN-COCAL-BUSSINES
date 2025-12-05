@@ -26,7 +26,7 @@ export function verificarToken(req, res, next) {
     const ahora = Date.now()
     const ultimaActividad = decoded.ultimaActividad || ahora
     const tiempoInactivo = (ahora - ultimaActividad) / 1000 / 60 // en minutos
-    const LIMITE_INACTIVIDAD = 30
+    const LIMITE_INACTIVIDAD = 120
 
     if (tiempoInactivo > LIMITE_INACTIVIDAD) {
       console.log('Token expirado por inactividad')
