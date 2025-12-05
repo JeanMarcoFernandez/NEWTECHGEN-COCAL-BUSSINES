@@ -5,6 +5,7 @@ import {
   obtenerEmpresaPorId,
   actualizarEmpresa,
   eliminarEmpresa,
+  obtenerEntornoEmpresa
 } from '../models/empresaModel.js';
 
 // POST /api/empresas
@@ -94,5 +95,26 @@ export async function eliminarEmpresaController(req, res) {
   } catch (error) {
     console.error('Error en eliminarEmpresaController:', error.message);
     return res.status(500).json({ message: 'Error al eliminar la empresa.' });
+  }
+}
+export async function listarEntornoEmpresaController(req, res) {
+  try {
+    const id_empresa = req.user?.id_empresa;
+
+    if (!id_empresa) {
+      return res.status(400).json({
+        mensaje: 'El token no contiene una empresa asociada (id_empresa).',
+      });
+    }
+
+    const entorno = await obtenerEntornoEmpresa(id_empresa);
+
+    return res.status(200).json(entorno);
+  } catch (error) {
+    console.error('Error en listarEntornoEmpresaController:', error);
+    return res.status(500).json({
+      mensaje: 'Error al obtener el entorno de la empresa.',
+      error: error.message,
+    });
   }
 }

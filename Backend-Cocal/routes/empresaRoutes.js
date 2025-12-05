@@ -6,6 +6,7 @@ import {
   obtenerEmpresaController,
   actualizarEmpresaController,
   eliminarEmpresaController,
+  listarEntornoEmpresaController
 } from '../controllers/empresaController.js';
 
 import { verificarToken } from '../middleware/verificarToken.js';
@@ -49,7 +50,169 @@ const router = Router();
  *           type: string
  *           example: "https://newtechgen.com"
  */
-
+/**
+ * @swagger
+ * /api/empresas/entorno:
+ *   get:
+ *     summary: Obtener entorno completo de la empresa del usuario autenticado
+ *     tags: [Empresas]
+ *     description: >
+ *       Devuelve la información de la empresa del usuario autenticado,  
+ *       sus departamentos y los usuarios asignados a cada departamento,  
+ *       incluyendo también la lista de usuarios sin departamento asignado.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Entorno de la empresa obtenido correctamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 empresa:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                     nombre:
+ *                       type: string
+ *                     nit:
+ *                       type: string
+ *                     rubro:
+ *                       type: string
+ *                     direccion:
+ *                       type: string
+ *                     telefono:
+ *                       type: string
+ *                     sitio_web:
+ *                       type: string
+ *                 departamentos:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nombre:
+ *                         type: string
+ *                       descripcion:
+ *                         type: string
+ *                       area:
+ *                         type: string
+ *                       visibilidad:
+ *                         type: string
+ *                       creado_en:
+ *                         type: string
+ *                         format: date-time
+ *                       usuarios:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             id:
+ *                               type: integer
+ *                             nombre:
+ *                               type: string
+ *                             apellido:
+ *                               type: string
+ *                             correo:
+ *                               type: string
+ *                             cargo:
+ *                               type: string
+ *                             rol:
+ *                               type: string
+ *                             estado:
+ *                               type: string
+ *                             telefono:
+ *                               type: integer
+ *                             fecha_ingreso:
+ *                               type: string
+ *                               format: date
+ *                             id_departamento:
+ *                               type: integer
+ *                 usuarios_sin_departamento:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nombre:
+ *                         type: string
+ *                       apellido:
+ *                         type: string
+ *                       correo:
+ *                         type: string
+ *                       cargo:
+ *                         type: string
+ *                       rol:
+ *                         type: string
+ *                       estado:
+ *                         type: string
+ *                       telefono:
+ *                         type: integer
+ *                       fecha_ingreso:
+ *                         type: string
+ *                         format: date
+ *                       id_departamento:
+ *                         type: string
+ *                         nullable: true
+ *         examples:
+ *           application/json:
+ *             value:
+ *               empresa:
+ *                 id: 1
+ *                 nombre: "TechCorp"
+ *                 nit: "123456"
+ *                 rubro: "Software"
+ *                 direccion: "Av. Siempre Viva 123"
+ *                 telefono: "44444444"
+ *                 sitio_web: "https://techcorp.com"
+ *               departamentos:
+ *                 - id: 3
+ *                   nombre: "SISTEMAS"
+ *                   descripcion: "Equipo de desarrollo"
+ *                   area: "SISTEMAS"
+ *                   visibilidad: "INTERNO"
+ *                   creado_en: "2025-01-01T10:00:00.000Z"
+ *                   usuarios:
+ *                     - id: 10
+ *                       nombre: "Sergio"
+ *                       apellido: "Arias"
+ *                       correo: "sergio@techcorp.com"
+ *                       cargo: "Dev Senior"
+ *                       rol: "EMPLEADO"
+ *                       estado: "ACTIVO"
+ *                       telefono: 78123456
+ *                       fecha_ingreso: "2024-02-01"
+ *                       id_departamento: 3
+ *                 - id: 4
+ *                   nombre: "RRHH"
+ *                   descripcion: null
+ *                   area: "RECURSOS_HUMANOS"
+ *                   visibilidad: "INTERNO"
+ *                   creado_en: "2025-01-05T10:00:00.000Z"
+ *                   usuarios: []
+ *               usuarios_sin_departamento:
+ *                 - id: 20
+ *                   nombre: "Juan"
+ *                   apellido: "Pérez"
+ *                   correo: "juan@techcorp.com"
+ *                   cargo: "Consultor"
+ *                   rol: "EMPLEADO"
+ *                   estado: "ACTIVO"
+ *                   telefono: 78999999
+ *                   fecha_ingreso: "2024-05-10"
+ *                   id_departamento: null
+ *       400:
+ *         description: El token no tiene empresa asociada
+ *       401:
+ *         description: Token inválido o ausente
+ *       500:
+ *         description: Error al obtener el entorno de la empresa
+ */
+router.get('/entorno', verificarToken, listarEntornoEmpresaController);
 /**
  * @swagger
  * /api/empresas:

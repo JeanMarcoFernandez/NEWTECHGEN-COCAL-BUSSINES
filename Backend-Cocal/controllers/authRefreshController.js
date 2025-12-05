@@ -17,7 +17,7 @@ export async function refreshToken(req, res) {
     
     const expTimestamp = decoded.exp * 1000;
     const now = Date.now();
-    const LIMITE_GRACIA_MS = 50 * 60 * 1000;
+    const LIMITE_GRACIA_MS = 120 * 60 * 1000;
 
     if (now - expTimestamp > LIMITE_GRACIA_MS) { 
       return res.status(401).json({ message: 'El token expiró definitivamente. Inicia sesión nuevamente.' });
@@ -33,13 +33,13 @@ export async function refreshToken(req, res) {
         ultimaActividad: Date.now(),
       },
       process.env.JWT_SECRET,
-      { expiresIn: '30m' } 
+      { expiresIn: '2H' } 
     );
 
     return res.status(200).json({
       message: 'Token renovado exitosamente.',
       token: newToken,
-      expira_en: '30 minutos',
+      expira_en: '2h',
     });
   } catch (error) {
     console.error('Error al refrescar token:', error.message);
