@@ -586,7 +586,6 @@ onMounted(() => {
 }
 
 .resource-container {
-  margin-top: 120px; /* Espacio para navbar si existe */
   padding-left: 20px;
   padding-right: 20px;
   transition: opacity 0.3s ease;

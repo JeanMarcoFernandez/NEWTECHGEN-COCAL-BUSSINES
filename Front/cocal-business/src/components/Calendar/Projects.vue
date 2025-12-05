@@ -120,24 +120,27 @@
             <v-divider></v-divider>
             
             <!-- ACTION BUTTONS -->
-            <v-card-actions class="pa-2 bg-grey-lighten-5 d-flex align-center gap-2">
-                <v-btn 
-                    class="flex-grow-1 text-none font-weight-bold" 
-                    variant="flat" 
-                    color="#3159AE" 
-                    style="color: white;"
-                    elevation="0"
-                    prepend-icon="mdi-calendar-check"
-                    @click.stop="goToCalendar(proj)"
-                >
-                    VER CALENDARIO
-                </v-btn>
+            <v-card-actions class="pa-2 bg-grey-lighten-5 d-flex align-center gap-2 ml-auto">
+                <div class="pa-1 bg-grey-lighten-5 text-caption text-grey text-start pl-3 pb-2 d-flex align-start">
+                  <v-icon size="x-small" class="mr-1">mdi-calendar-range</v-icon>
+                  {{ formatDate(proj.fecha_inicio) }} - {{ formatDate(proj.fecha_fin) }}
+                </div>
+                <!-- 2. CIRCULAR CALENDAR -->
+                <v-tooltip location="top" text="Ver Calendario del Departamento">
+                    <template v-slot:activator="{ props }">
+                    <v-btn 
+                        v-bind="props"
+                        icon 
+                        variant="tonal" 
+                        color="#3159AE"
+                        class="rounded-circle"
+                        @click.stop="goToCalendar(proj.id)"
+                    >
+                        <v-icon>mdi-calendar-month</v-icon>
+                    </v-btn>
+                    </template>
+                </v-tooltip>
             </v-card-actions>
-            
-            <div class="pa-1 bg-grey-lighten-5 text-caption text-grey text-start pl-3 pb-2 d-flex align-center">
-               <v-icon size="x-small" class="mr-1">mdi-calendar-range</v-icon>
-               {{ formatDate(proj.fecha_inicio) }} - {{ formatDate(proj.fecha_fin) }}
-            </div>
           </v-card>
         </v-col>
       </v-row>
@@ -386,7 +389,7 @@ const resetForm = () => {
 
 const formatDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString('es-ES') : '-'
 const showSnackbar = (text, color) => { snackbar.text = text; snackbar.color = color; snackbar.show = true }
-const goToCalendar = (proj) => console.log("Calendario de:", proj.nombre)
+const goToCalendar = (id) => router.push({name: 'ProjectCalendar', params: { id: id }})
 
 onMounted(() => fetchProjects())
 watch(() => props.departmentId, (newId) => { if (newId) fetchProjects() })

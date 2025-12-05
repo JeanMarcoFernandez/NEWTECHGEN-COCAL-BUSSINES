@@ -135,22 +135,6 @@
                 >
                     VER PROYECTOS
                 </v-btn>
-
-                <!-- 2. CIRCULAR CALENDAR -->
-                <v-tooltip location="top" text="Ver Calendario del Departamento">
-                    <template v-slot:activator="{ props }">
-                    <v-btn 
-                        v-bind="props"
-                        icon 
-                        variant="tonal" 
-                        color="#3159AE"
-                        class="rounded-circle"
-                        @click.stop="goToCalendar(dept)"
-                    >
-                        <v-icon>mdi-calendar-month</v-icon>
-                    </v-btn>
-                    </template>
-                </v-tooltip>
             </v-card-actions>
             
             <div class="pa-1 bg-grey-lighten-5 text-caption text-grey text-start">
