@@ -17,7 +17,7 @@ import MyCalendar from '@/components/Calendar/MyCalendar.vue'
 import GroupCalendar from '@/components/Calendar/GroupCalendar.vue'
 import Resources from '@/components/Calendar/Resources.vue'
 import Empresas from '@/components/Calendar/CompanyManagement.vue'
-import CompanyManagement from '@/components/Calendar/CompanyManagement.vue'
+import Analitic from '@/components/Calendar/Analitics.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,7 +49,8 @@ const router = createRouter({
         { path: '', name: 'MyCalendar', component: MyCalendar },
         { path: '/groups', name: 'Grupos', component:  GroupCalendar},
         { path: '/resources', name: 'Recursos', component:  Resources},
-        { path: '/empresas', name: 'Empresas', component:  CompanyManagement}
+        { path: '/empresas', name: 'Empresas', component:  Empresas},
+        { path: '/analisis', name: 'Analisis', component:  Analitic}
       ]
     },
     {
