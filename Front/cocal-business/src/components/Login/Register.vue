@@ -1,55 +1,133 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
-import { restablecerContrasena } from "../api/auth.js";
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { register } from '../../api/auth';
 
-const route = useRoute();
 const router = useRouter();
 
-const token = route.params.token;
-const newContrasena = ref('')
 const showPassword1 = ref(false)
 const showPassword2 = ref(false)
-const error = ref('')
 const message = ref('')
+const error = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
-async function handleRestablish() {
+const nombre = ref('');
+const apellido = ref('');
+const correo = ref('');
+const telefono = ref('');
+const cargo = ref('');
+const contrasena = ref('');
+
+const registerForm = ref()
+
+const handleRegister = async () => {
   snackbar.value = false
   snackbarError.value = false
   error.value = ''
   message.value = ''
-  loading.value = true;
+  loading.value = true
 
   try {
-    const { data } = await restablecerContrasena(token, newContrasena.value);
-    message.value = data.message;
-    router.push("/login");
-  } catch (err) {
-    error.value = err.response?.data?.message || "Error al restablecer contraseña.";
-  } finally {
-    loading.value = false;
-  }
-}
+    await register({
+      nombre: nombre.value,
+      apellido: apellido.value,
+      correo: correo.value,
+      telefono: telefono.value,
+      cargo: cargo.value,
+      contrasena: contrasena.value
+    });
 
+    message.value = 'Registro exitoso.'
+    snackbar.value = true 
+    // limpiar campos
+    registerForm.value.reset()
+    // redirigir a login
+    router.push('/login');
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Error al registrarse.';
+    snackbarError.value = true
+  }
+};
 </script>
 
 <template>
-  <v-container fluid class="reset-page">
-    <v-card class="reset-card" elevation="3">
-        <v-card-title class="reset-title">Restablece tu contraseña</v-card-title>
-        <v-form ref="resetForm" @submit.prevent="handleRestablish">
-            <v-row class="px-4 pb-6">
-                <p>
-                    Ingresa una nueva contraseña.
-                </p>
+  <v-container fluid class="register-page">
+    <v-card class="register-card" elevation="3">
+        <v-card-title class="register-title">Crea tu cuenta</v-card-title>
+        <v-form ref="registerForm" @submit.prevent="handleRegister">
+             <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="nombre"
+                    class="register-input"
+                    label="Nombre"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.'
+                    ]"
+                    required
+                    />
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="apellido"
+                    class="register-input"
+                    label="Apellido"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.'
+                    ]"
+                    required
+                    />
+                </v-col>
             </v-row>
+
             <v-row>
                 <v-col cols="12">
                     <v-text-field
-                    v-model="newContrasena"
+                    v-model="correo"
+                    class="register-input"
+                    label="Correo electrónico"
+                    type="email"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => /.+@.+\..+/.test(v) || 'El correo electrónico no es válido.'
+                    ]"
+                    required
+                    />
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="cargo"
+                    class="register-input"
+                    label="Cargo"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.'
+                    ]"
+                    required
+                    />
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="telefono"
+                    class="register-input"
+                    label="Teléfono"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => /^[0-9]{8}$/.test(v) || 'El teléfono debe tener 8 dígitos.'
+                    ]"
+                    required
+                    />
+                </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="contrasena"
+                    class="register-input"
                     label="Contraseña"
                     :type="showPassword1 ? 'text' : 'password'"
                     :rules="[
@@ -61,15 +139,14 @@ async function handleRestablish() {
                     required
                     />
                 </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
+                <v-col cols="12" md="6">
                     <v-text-field
                     label="Confirmar Contraseña"
+                    class="register-input"
                     :type="showPassword2 ? 'text' : 'password'"
                     :rules="[
                         v => !!v || 'Este campo no puede estar vacío.',
-                        v => v === newContrasena || 'Las contraseñas no coinciden.'
+                        v => v === contrasena || 'Las contraseñas no coinciden.'
                     ]"
                     :append-inner-icon="showPassword2 ? 'mdi-eye-off' : 'mdi-eye'"
                     @click:append-inner="showPassword2 = !showPassword2"
@@ -80,16 +157,20 @@ async function handleRestablish() {
             <v-row>
                 <v-btn
                 type="submit"
-                class="reset-btn"
+                class="register-btn"
                 :loading="loading"
                 block
                 rounded
                 >
-                Restablecer
+                Registrarse
                 </v-btn>
+            </v-row>
+            <v-row class="justify-center pt-4">
+                <router-link class="link" to="/login">Volver al Inicio de Sesión</router-link>
             </v-row>
         </v-form>
     </v-card>
+
     <v-snackbar v-model="snackbar" :timeout="4000" color="#A0B5E4" top>
       <span class="snackbar-message">{{ message }}</span>
     </v-snackbar>
@@ -102,9 +183,9 @@ async function handleRestablish() {
 
 <style scoped>
 
-.reset-page {
+.register-page {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(135deg, rgba(49, 89, 174, 0.4), rgba(241, 240, 236, 0.4));
   background-size: 200% 200%;
   animation: gradientAnimation 5s ease infinite;
@@ -113,7 +194,7 @@ async function handleRestablish() {
   align-items: center;
 }
 
-.reset-page::before {
+.register-page::before {
   content: '';
   position: absolute;
   top: 0;
@@ -151,32 +232,24 @@ async function handleRestablish() {
   }
 }
 
-.reset-card {
+.register-card {
   padding: 32px;
-  max-width: 420px;
+  max-width: 820px;
   width: 100%;
   border-radius: 20px;
   background-color: rgba(231, 236, 243, 0.85);
 }
 
-.reset-title {
+.register-title {
   font-family: "Funnel Display", sans-serif;
   font-weight: 600;
   text-align: center;
   margin-bottom: 1.5rem;
   font-size: x-large;
   color: #061244;
-  white-space: normal; 
-  word-wrap: break-word;
-}
-p {
-font-family: "Zalanda Sans", sans-serif;
-  text-align: justify;
-  font-size: large;
-  color: #061244;
 }
 
-.reset-input {
+.register-input {
   width: 100%;
   margin-bottom: 14px;
   border-radius: 10px;
@@ -186,7 +259,7 @@ font-family: "Zalanda Sans", sans-serif;
   transition: border 0.3s ease, background-color 0.3s ease;
 }
 
-.reset-btn {
+.register-btn {
   width: 100%;
   margin-top: 1rem;
   height: 48px;
@@ -201,7 +274,7 @@ font-family: "Zalanda Sans", sans-serif;
   transition: background 0.4s ease, transform 0.2s ease;
 }
 
-.reset-btn:hover {
+.register-btn:hover {
   background: linear-gradient(to right, #183581, #3159AE);
   transform: scale(1.02);
 }
@@ -221,5 +294,11 @@ font-family: "Zalanda Sans", sans-serif;
 
 .link:hover {
     color: #3159ae;
+}
+
+@media screen and (max-width: 767px) {
+    .register-page {
+        padding: 50px 10px;
+    }
 }
 </style>

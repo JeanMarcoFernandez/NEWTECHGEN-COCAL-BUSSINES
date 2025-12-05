@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import { createUser } from '../api/admin';
+import { createUser } from '../../api/admin';
 
 const userRole = ref('')
 const router = useRouter()

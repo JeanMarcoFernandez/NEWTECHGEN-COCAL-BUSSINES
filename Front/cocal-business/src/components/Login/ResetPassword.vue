@@ -1,57 +1,36 @@
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import { changePasswordFirstLogin } from '../api/auth.js'
+import { restablecerContrasena } from "../../api/auth.js";
 
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
+const token = route.params.token;
 const newContrasena = ref('')
 const showPassword1 = ref(false)
 const showPassword2 = ref(false)
 const error = ref('')
 const message = ref('')
-const correo = ref('')
 const loading = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
-const changeForm = ref()
-
-onMounted(() => {
-  // 🔹 Recuperar el correo guardado por el LoginView
-  correo.value = localStorage.getItem('correo_cambio') || ''
-})
-
-const handleChange = async () => {
+async function handleRestablish() {
   snackbar.value = false
   snackbarError.value = false
   error.value = ''
   message.value = ''
-  loading.value = true
-  
-  if (!correo.value) {
-    error.value = 'Error: No se encontró el correo del usuario. Vuelve a iniciar sesión.'
-    snackbarError.value = true
-    router.push('/login')
-    return
-  }
+  loading.value = true;
 
   try {
-    console.log('Enviando:', { correo: correo.value, nuevaContrasena: newContrasena.value })
-    const { data } = await changePasswordFirstLogin(correo.value, newContrasena.value)
-    message.value = data.message || 'Contraseña cambiada exitosamente.'
-    snackbar.value = true
-
-    // limpiar datos y redirigir
-    localStorage.removeItem('correo_cambio')
-    changeForm.value.reset()
-    router.push('/login')
+    const { data } = await restablecerContrasena(token, newContrasena.value);
+    message.value = data.message;
+    router.push("/login");
   } catch (err) {
-    console.error('Error al cambiar contraseña:', err.response?.data || err)
-    error.value = err.response?.data?.message || 'Error al cambiar la contraseña.'
-    snackbarError.value = true
+    error.value = err.response?.data?.message || "Error al restablecer contraseña.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -60,11 +39,11 @@ const handleChange = async () => {
 <template>
   <v-container fluid class="reset-page">
     <v-card class="reset-card" elevation="3">
-        <v-card-title class="reset-title">Cambia tu contraseña</v-card-title>
-        <v-form ref="changeForm" @submit.prevent="handleChange">
+        <v-card-title class="reset-title">Restablece tu contraseña</v-card-title>
+        <v-form ref="resetForm" @submit.prevent="handleRestablish">
             <v-row class="px-4 pb-6">
                 <p>
-                    Por motivos de seguridad, debes cambiar tu contraseña antes de continuar.
+                    Ingresa una nueva contraseña.
                 </p>
             </v-row>
             <v-row>
@@ -98,7 +77,7 @@ const handleChange = async () => {
                     />
                 </v-col>
             </v-row>
-            <v-row class="py-4">
+            <v-row>
                 <v-btn
                 type="submit"
                 class="reset-btn"
@@ -106,7 +85,7 @@ const handleChange = async () => {
                 block
                 rounded
                 >
-                Cambiar contraseña
+                Restablecer
                 </v-btn>
             </v-row>
         </v-form>
