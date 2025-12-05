@@ -33,7 +33,6 @@ const router = Router();
  *               - nombre
  *               - apellido
  *               - cargo
- *               - id_empresa
  *             properties:
  *               correo:
  *                 type: string

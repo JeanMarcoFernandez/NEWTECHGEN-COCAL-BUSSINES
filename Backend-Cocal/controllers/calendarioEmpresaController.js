@@ -7,7 +7,7 @@ import {
   actualizarEventoEmpresaService,
   eliminarEventoEmpresaService,
 } from '../services/calendarioEmpresaService.js';
-
+import { validarPermisoGranular } from '../middleware/validarPermisoGranular.js';
 // POST /api/calendarios/empresa/proyecto/:idProyecto
 export async function crearCalendarioEmpresaController(req, res) {
   try {
