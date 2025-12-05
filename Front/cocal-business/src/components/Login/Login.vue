@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { login } from '../api/auth'
+import { login } from '../../api/auth'
 
 const router = useRouter()
 
@@ -43,7 +43,6 @@ const handleLogin = async () => {
 
       // 🔹 Caso: primer login (debe cambiar contraseña)
       if (data.requerirCambio) {
-        alert('Debe cambiar su contraseña antes de continuar 🔒')
         localStorage.setItem('correo_cambio', correo.value)
         router.push('/password/first-login')
         return
@@ -54,7 +53,7 @@ const handleLogin = async () => {
       localStorage.setItem('usuario', JSON.stringify(data.usuario))
       message.value = 'Inicio de sesión exitoso.'
       snackbar.value = true
-      router.push('/')
+      router.push('/mycalendar')
 
     } catch (err) {
       const res = err.response?.data

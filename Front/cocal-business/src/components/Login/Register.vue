@@ -1,11 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
-import { createUser } from '../api/admin';
+import { ref } from 'vue'
+import { register } from '../../api/auth';
 
-const userRole = ref('')
-const router = useRouter()
+const router = useRouter();
 
+const showPassword1 = ref(false)
+const showPassword2 = ref(false)
 const message = ref('')
 const error = ref('')
 const loading = ref(false)
@@ -18,12 +19,8 @@ const correo = ref('');
 const telefono = ref('');
 const cargo = ref('');
 const contrasena = ref('');
-const rol = ref('')
 
 const registerForm = ref()
-
-const roles = ['ADMIN', 'EMPLEADO']
-
 
 const handleRegister = async () => {
   snackbar.value = false
@@ -33,43 +30,32 @@ const handleRegister = async () => {
   loading.value = true
 
   try {
-    const nuevoUsuario = {
-      correo: correo.value,
-      contrasena: contrasena.value,
+    await register({
       nombre: nombre.value,
       apellido: apellido.value,
-      cargo: cargo.value,
-      rol: rol.value,
+      correo: correo.value,
       telefono: telefono.value,
-    };
+      cargo: cargo.value,
+      contrasena: contrasena.value
+    });
 
-    await createUser(nuevoUsuario);
-
-    message.value = 'Usuario creado correctamente'
-    snackbar.value = true
-
-    // Limpiar campos
+    message.value = 'Registro exitoso.'
+    snackbar.value = true 
+    // limpiar campos
     registerForm.value.reset()
-  } catch (error) {
-    error.value = error.response?.data?.mensaje || 'Error al crear usuario'
+    // redirigir a login
+    router.push('/login');
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Error al registrarse.';
     snackbarError.value = true
   }
 };
-
-onMounted(() => {
-  userRole.value = localStorage.getItem('rol');
-  console.log(rol.value)
-
-  if(userRole.value !== 'ADMIN'){
-    router.push('/')
-  }
-});
 </script>
 
 <template>
   <v-container fluid class="register-page">
     <v-card class="register-card" elevation="3">
-        <v-card-title class="register-title">Crea un usuario</v-card-title>
+        <v-card-title class="register-title">Crea tu cuenta</v-card-title>
         <v-form ref="registerForm" @submit.prevent="handleRegister">
              <v-row>
                 <v-col cols="12" md="6">
@@ -123,7 +109,7 @@ onMounted(() => {
                     required
                     />
                 </v-col>
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="6">
                     <v-text-field
                     v-model="telefono"
                     class="register-input"
@@ -135,19 +121,39 @@ onMounted(() => {
                     required
                     />
                 </v-col>
-                <v-col cols="12" md="3">
-                  <v-select
-                    label="Rol"
-                    v-model="rol"
-                    class="register-input"
-                    :items="roles"
-                    item-title="label"
-                    item-value="value"
-                    :placeholder="'Seleccionar rol'"  
-                  />
-                </v-col>
             </v-row>
 
+            <v-row>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    v-model="contrasena"
+                    class="register-input"
+                    label="Contraseña"
+                    :type="showPassword1 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v.length >= 8 || 'La contraseña debe tener al menos 8 caracteres.'
+                    ]"
+                    :append-inner-icon="showPassword1 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword1 = !showPassword1"
+                    required
+                    />
+                </v-col>
+                <v-col cols="12" md="6">
+                    <v-text-field
+                    label="Confirmar Contraseña"
+                    class="register-input"
+                    :type="showPassword2 ? 'text' : 'password'"
+                    :rules="[
+                        v => !!v || 'Este campo no puede estar vacío.',
+                        v => v === contrasena || 'Las contraseñas no coinciden.'
+                    ]"
+                    :append-inner-icon="showPassword2 ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showPassword2 = !showPassword2"
+                    required
+                    />
+                </v-col>
+            </v-row>
             <v-row>
                 <v-btn
                 type="submit"
@@ -158,6 +164,9 @@ onMounted(() => {
                 >
                 Registrarse
                 </v-btn>
+            </v-row>
+            <v-row class="justify-center pt-4">
+                <router-link class="link" to="/login">Volver al Inicio de Sesión</router-link>
             </v-row>
         </v-form>
     </v-card>
