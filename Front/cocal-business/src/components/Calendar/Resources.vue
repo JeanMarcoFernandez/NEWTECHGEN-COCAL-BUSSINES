@@ -425,26 +425,49 @@ const fetchResources = async () => {
 
 // 2. Crear / Editar Recurso
 const submitResource = async () => {
+  // 1. Validación básica de UI
   if(!resourceForm.nombre || !resourceForm.ubicacion) {
-    showSnackbar('Completa los campos obligatorios', 'warning')
+    showSnackbar('Completa nombre y ubicación', 'warning')
     return
   }
+  
   submitting.value = true
   
   try {
+    // 2. PREPARAR EL PAYLOAD EXACTO (Según tu Swagger)
+    // Creamos un objeto limpio solo con lo que pide la API
+    const payload = {
+      id_departamento: resourceForm.id_departamento,
+      nombre: resourceForm.nombre,
+      descripcion: resourceForm.descripcion,
+      tipo: resourceForm.tipo,
+      ubicacion: resourceForm.ubicacion,
+      capacidad: Number(resourceForm.capacidad), // Aseguramos que sea número
+      visibilidad: resourceForm.visibilidad,
+      tiempo_max_reserva: Number(resourceForm.tiempo_max_reserva)
+    }
+
     if (isEditing.value) {
-      // Nota: El Swagger no mostraba PUT /recursos/{id} completo, asumo existencia o uso PATCH
-      // Si no existe, mostrar error. Aquí simulamos actualización o usamos create logic
-       showSnackbar('Endpoint de edición completa no especificado en swagger (Solo mantenimiento)', 'warning')
+      // Lógica de edición (PUT) - Asumiendo que usa el mismo body
+      await axios.put(`${API_BASE}/recursos/${resourceForm.id}`, payload, { headers: getHeaders() })
+      showSnackbar('Recurso actualizado', 'success')
     } else {
-      await axios.post(`${API_BASE}/recursos`, resourceForm, { headers: getHeaders() })
+      // Lógica de creación (POST)
+      // Nota: NO enviamos id_empresa, el backend lo toma del Token
+      await axios.post(`${API_BASE}/recursos`, payload, { headers: getHeaders() })
       showSnackbar('Recurso creado exitosamente', 'success')
     }
+
     closeRightPanel()
-    fetchResources()
+    fetchResources() // Recargar la lista
   } catch (error) {
     console.error(error)
-    showSnackbar('Error al guardar recurso', 'error')
+    // Manejo de error específico si el backend valida duplicados, etc.
+    if (error.response?.status === 400) {
+       showSnackbar('Error en los datos enviados. Verifica el formulario.', 'error')
+    } else {
+       showSnackbar('Ocurrió un error al guardar', 'error')
+    }
   } finally {
     submitting.value = false
   }

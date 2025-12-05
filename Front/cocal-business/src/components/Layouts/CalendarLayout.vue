@@ -25,6 +25,13 @@ const navItems = ref([
     roles: ['ADMIN', 'EMPLEADO'] 
   },
   {
+    title: 'Empresas',
+    icon: 'mdi-domain',        
+    to: '/empresas',
+    subtitle: 'Gestión de Empresas',
+    roles: ['ADMIN']           
+  },
+  {
     title: 'Recursos',
     icon: 'mdi-projector',
     to: '/resources',
