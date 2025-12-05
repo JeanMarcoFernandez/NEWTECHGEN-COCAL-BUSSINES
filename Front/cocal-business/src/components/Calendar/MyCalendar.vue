@@ -1,6 +1,7 @@
 <template>
   <div class="calendar-wrapper">
     
+    <!-- Left Side Bar -->
     <div class="custom-sidebar" :class="{ 'is-open': isLeftOpen }">
       <div class="sidebar-content">
         
@@ -62,6 +63,7 @@
       </div>
     </div>
 
+    <!-- Calendar -->
     <v-container class="calendar-container" :class="{ 'dimmed': showEventPanel }">
       <div 
         v-if="showEventPanel" 
@@ -74,6 +76,7 @@
         </v-card>
     </v-container>
 
+    <!-- Right Side Bar -->
       <div 
       v-if="!mobile" 
       class="right-event-panel" 
@@ -81,13 +84,24 @@
     >
       <div class="panel-header pa-4 border-b d-flex justify-space-between align-center">
         <span class="text-h6 font-weight-bold" style="color: #061244; font-family: 'Funnel Display'">
-          {{ isEventEditing ? 'Editar Evento' : 'Nuevo Evento' }}
+          <span v-if="panelMode === 'create'">Nuevo Evento</span>
+          <span v-else-if="panelMode === 'edit'">Editar Evento</span>
+          <span v-else>Detalles del Evento</span>
         </span>
         <v-btn icon="mdi-close" variant="text" @click="closeEventPanel"></v-btn>
       </div>
       
       <div class="panel-content pa-4">
+        <EventDetails
+            v-if="panelMode === 'view'"
+            :form="eventForm"
+            :calendars="calendars"
+            @edit="switchToEditMode"
+            @delete="deleteEvent"
+        />
+
         <EventForm 
+            v-else
             :form="eventForm" 
             :calendars="calendars" 
             :is-editing="isEventEditing"
@@ -98,24 +112,45 @@
       </div>
     </div>
 
+    <!-- Bottom sheet for mobile -->
     <v-bottom-sheet v-if="mobile" v-model="showEventPanel" inset>
-      <v-card class="rounded-t-xl" style="max-height: 80vh; overflow-y: auto;">
-        <div class="pa-4 text-center border-b">
-          <div class="sheet-handle mx-auto mb-2"></div> <!-- Drag Handle visual -->
-          <span class="text-h6 font-weight-bold" style="color: #061244;">Nuevo Evento</span>
-        </div>
-        <div class="pa-4">
-          <EventForm 
-            :form="eventForm" 
-            :calendars="calendars" 
-            :is-editing="isEventEditing"
-            :loading="submittingEvent"
-            @submit="saveEvent" 
-            @delete="deleteEvent" 
-            />
-        </div>
-      </v-card>
-    </v-bottom-sheet>
+  <v-card class="rounded-t-xl" style="max-height: 85vh; display: flex; flex-direction: column;">
+    
+    <div class="pa-4 border-b d-flex justify-space-between align-center">
+      <div style="position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: #e0e0e0; border-radius: 4px;"></div>
+
+      <span class="text-h6 font-weight-bold mt-2" style="color: #061244; font-family: 'Funnel Display'">
+        <span v-if="panelMode === 'create'">Nuevo Evento</span>
+        <span v-else-if="panelMode === 'edit'">Editar Evento</span>
+        <span v-else>Detalles</span>
+      </span>
+      
+      <v-btn icon="mdi-close" variant="text" density="compact" class="mt-2" @click="showEventPanel = false"></v-btn>
+    </div>
+
+    <div class="pa-4" style="overflow-y: auto;">
+      
+      <EventDetails
+        v-if="panelMode === 'view'"
+        :form="eventForm"
+        :calendars="calendars"
+        @edit="switchToEditMode"
+        @delete="deleteEvent"
+      />
+
+      <EventForm 
+        v-else
+        :form="eventForm" 
+        :calendars="calendars" 
+        :is-editing="panelMode === 'edit'"
+        :loading="submittingEvent"
+        @submit="saveEvent" 
+        @delete="deleteEvent" 
+      />
+      
+    </div>
+  </v-card>
+</v-bottom-sheet>
 
     <v-dialog v-model="dialogOpen" max-width="400">
       <v-card class="rounded-xl pa-4">
@@ -167,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 import axios from 'axios'
 import Swal from 'sweetalert2'
@@ -194,11 +229,14 @@ const getHeaders = () => {
 };
 
 const calendars = ref([])
-const loading = ref(false)
+const allEvents = ref([])
+
+const loadingEvents = ref(false)
 const submitting = ref(false)
 const isLeftOpen = ref(false) 
 const showEventPanel = ref(false) 
 const submittingEvent = ref(false)
+const panelMode = ref('view')
 
 const dialogOpen = ref(false)
 const isEditing = ref(false)
@@ -276,13 +314,14 @@ const fetchCalendarsAndEvents = async () => {
 }
 
 const fetchAllEvents = async () => {
-  loading.value = true
-  let accumulatedEvents = []
+  loadingEvents.value = true
+  let accumulated = []
 
   try {
     const promises = calendars.value.map(async (cal) => {
         try {
             const res = await axios.get(`${API_BASE}/calendarios/usuario/${cal.id}/eventos`, { headers: getHeaders() })
+            
             return res.data.map(ev => ({
                 id: ev.id,
                 title: ev.titulo,
@@ -290,7 +329,7 @@ const fetchAllEvents = async () => {
                 end: ev.fecha_fin,
                 color: cal.color, 
                 extendedProps: {
-                    calendarId: ev.id_calendario, 
+                    calendarId: cal.id, 
                     descripcion: ev.descripcion,
                     tipo: ev.tipo,
                     visibilidad: ev.visibilidad,
@@ -299,22 +338,40 @@ const fetchAllEvents = async () => {
                 }
             }))
         } catch (e) {
-            console.error(`Error cargando eventos del calendario ${cal.id}`, e)
+            console.error(e)
             return []
         }
     })
 
     const results = await Promise.all(promises)
-    results.forEach(events => accumulatedEvents.push(...events))
+    results.forEach(events => accumulated.push(...events))
     
-    calendarOptions.events = accumulatedEvents
+    allEvents.value = accumulated;
+    
+    updateVisibleEvents();
 
   } catch (err) {
     showSnackbar('Error obteniendo eventos', 'error')
   } finally {
-    loading.value = false
+    loadingEvents.value = false
   }
 }
+
+watch(calendars, () => {
+  updateVisibleEvents();
+}, { deep: true });
+
+const updateVisibleEvents = () => {
+  const visibleCalendarIds = calendars.value
+    .filter(c => c.visible)
+    .map(c => c.id);
+
+  const filtered = allEvents.value.filter(ev => {
+    return visibleCalendarIds.includes(ev.extendedProps.calendarId);
+  });
+
+  calendarOptions.events = filtered;
+};
 
 const saveCalendar = async () => {
   if (!calendarForm.title) return
@@ -395,6 +452,7 @@ const deleteCalendar = async (id) => {
 const handleDateClick = (arg) => {
     isEventEditing.value = false
   currentEventId.value = null
+  panelMode.value = 'create'
 
   eventForm.fecha_inicio = `${arg.dateStr}T09:00`
   eventForm.fecha_fin = `${arg.dateStr}T10:00`
@@ -417,6 +475,7 @@ function handleEventClick(info) {
 
   isEventEditing.value = true
   currentEventId.value = parseInt(ev.id) 
+  panelMode.value = 'view'
 
   // Llenar Formulario
   eventForm.titulo = ev.title
@@ -433,16 +492,27 @@ function handleEventClick(info) {
   showEventPanel.value = true
 }
 
-// POST or PATCH
+const switchToEditMode = () => {
+  panelMode.value = 'edit'
+}
+
+// POST or PATCH event
 const saveEvent = async () => {
+  // 1. Validation
   if (!eventForm.titulo || !eventForm.calendarId) {
-    showSnackbar('Faltan datos obligatorios', 'warning')
+    showSnackbar('El título y el calendario son obligatorios', 'warning')
     return
   }
 
   submittingEvent.value = true
   
-  // Preparar Payload (Asegurar formato de fecha ISO completo)
+  // 2. Helper to ensure API receives seconds (ISO format)
+  // Input: "2025-11-27T09:00" -> Output: "2025-11-27T09:00:00"
+  const ensureSeconds = (dateStr) => {
+    return dateStr && dateStr.length === 16 ? `${dateStr}:00` : dateStr
+  }
+
+  // 3. Prepare Payload
   const payload = {
     titulo: eventForm.titulo,
     descripcion: eventForm.descripcion,
@@ -456,28 +526,73 @@ const saveEvent = async () => {
 
   try {
     if (isEventEditing.value) {
+      // EDIT
+      
       await axios.patch(`${API_BASE}/calendarios/usuario/eventos/${currentEventId.value}`, payload, { headers: getHeaders() })
       
-      showSnackbar('Evento actualizado correctamente', 'success')
+      const index = allEvents.value.findIndex(e => e.id === currentEventId.value)
+      
+      if (index !== -1) {
+        const newCal = calendars.value.find(c => c.id === eventForm.calendarId)
+        
+        allEvents.value[index] = {
+          ...allEvents.value[index],
+          title: payload.titulo,
+          start: payload.fecha_inicio,
+          end: payload.fecha_fin,
+          color: newCal ? newCal.color : '#3159AE',
+          extendedProps: {
+            calendarId: eventForm.calendarId,
+            descripcion: payload.descripcion,
+            tipo: payload.tipo,
+            visibilidad: payload.visibilidad,
+            estado: payload.estado,
+            responsable: payload.responsable
+          }
+        }
+      }
+      
+      showSnackbar('Evento actualizado', 'success')
 
     } else {
-      await axios.post(`${API_BASE}/calendarios/usuario/${eventForm.calendarId}/eventos`, payload, { headers: getHeaders() })
+      // CREATE
       
-      showSnackbar('Evento creado correctamente', 'success')
+      const res = await axios.post(`${API_BASE}/calendarios/usuario/${eventForm.calendarId}/eventos`, payload, { headers: getHeaders() })
+      
+      const selectedCal = calendars.value.find(c => c.id === eventForm.calendarId)
+      
+      allEvents.value.push({
+        id: res.data.id || Date.now(),
+        title: payload.titulo,
+        start: payload.fecha_inicio,
+        end: payload.fecha_fin,
+        color: selectedCal ? selectedCal.color : '#3159AE',
+        extendedProps: {
+            calendarId: eventForm.calendarId,
+            descripcion: payload.descripcion,
+            tipo: payload.tipo,
+            visibilidad: payload.visibilidad,
+            estado: 'PROGRAMADO',
+            responsable: payload.responsable
+        }
+      })
+      
+      showSnackbar('Evento creado', 'success')
     }
 
-    await fetchAllEvents()
+    updateVisibleEvents()
+    
     showEventPanel.value = false
 
   } catch (error) {
-    console.error(error)
+    console.error('Error saving event:', error)
     showSnackbar('Error al guardar el evento', 'error')
   } finally {
     submittingEvent.value = false
   }
 }
 
-// Delete
+// Delete event
 const deleteEvent = async () => {
   if (!currentEventId.value) return
 
@@ -507,6 +622,9 @@ const deleteEvent = async () => {
     console.error(error)
     showSnackbar('No se pudo eliminar el evento', 'error')
   }
+
+  allEvents.value = allEvents.value.filter(e => e.id != currentEventId.value)
+  updateVisibleEvents()
 }
 
 const closeEventPanel = () => {
@@ -544,6 +662,9 @@ const calendarOptions = reactive({
   weekends: true,
   locales: [ esLocale ],
   locale: [ 'es' ],
+  allDaySlot: false,
+  expandRows: true,
+  height: '100%',
   
   // Event Handlers
   dateClick: handleDateClick,
@@ -558,7 +679,7 @@ onMounted(() => {
 
 <script>
 import { h } from 'vue'
-import { VTextField, VTextarea, VSelect, VBtn } from 'vuetify/components'
+import { VTextField, VTextarea, VSelect, VBtn, VChip, VIcon } from 'vuetify/components'
 
 const EventForm = ({
   props: {
@@ -680,6 +801,100 @@ const EventForm = ({
     }
   }
 })
+
+const EventDetails = ({
+  props: {
+    form: { type: Object, required: true }, // Reutilizamos el objeto form que ya tiene los datos
+    calendars: { type: Array, default: () => [] }
+  },
+  emits: ['edit', 'delete'],
+  setup(props, { emit }) {
+    
+    // Helper para formatear fechas bonitas (ej: "Jueves, 27 Nov - 09:00")
+    const formatDate = (isoString) => {
+      if (!isoString) return ''
+      const date = new Date(isoString)
+      return new Intl.DateTimeFormat('es-ES', { 
+        weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+      }).format(date)
+    }
+
+    // Obtener info del calendario (nombre y color)
+    const calendarInfo = computed(() => {
+      return props.calendars.find(c => c.id === props.form.calendarId) || { title: 'Desconocido', color: 'grey' }
+    })
+
+    return () => {
+      const f = props.form
+      
+      return h('div', { class: 'd-flex flex-column h-100' }, [
+        
+        // 1. Contenido Scrolleable
+        h('div', { class: 'flex-grow-1' }, [
+          
+          // Badge del Calendario
+          h(VChip, {
+            color: calendarInfo.value.color,
+            class: 'mb-4 font-weight-bold',
+            variant: 'tonal',
+            size: 'small'
+          }, () => calendarInfo.value.title),
+
+          // Título
+          h('h2', { 
+            class: 'text-h4 font-weight-bold mb-2',
+            style: { fontFamily: 'Funnel Display, sans-serif', color: '#061244', lineHeight: '1.2' }
+          }, f.titulo),
+
+          // Fechas
+          h('div', { class: 'd-flex align-center text-subtitle-1 mb-6 text-grey-darken-1' }, [
+            h(VIcon, { icon: 'mdi-clock-outline', size: 'small', class: 'mr-2' }),
+            h('span', `${formatDate(f.fecha_inicio)}`),
+            h('span', { class: 'mx-2' }, '→'),
+            h('span', `${formatDate(f.fecha_fin)}`)
+          ]),
+
+          // Descripción
+          f.descripcion ? h('div', { class: 'mb-4' }, [
+            h('div', { class: 'text-caption font-weight-bold text-uppercase text-grey mb-1' }, 'Descripción'),
+            h('p', { class: 'text-body-1', style: { whiteSpace: 'pre-wrap' } }, f.descripcion)
+          ]) : null,
+
+          // Metadata (Tipo y Visibilidad)
+          h('div', { class: 'd-flex gap-2 mt-4' }, [
+            h(VChip, { size: 'small', variant: 'outlined' }, () => `Tipo: ${f.tipo}`),
+            h(VChip, { size: 'small', variant: 'outlined' }, () => `Vis: ${f.visibilidad}`)
+          ])
+        ]),
+
+        // 2. Botones de Acción (FABs en la parte inferior derecha)
+        h('div', { class: 'd-flex justify-end gap-3 mt-4 pt-4' }, [
+          // Botón Editar (Lápiz)
+          h(VBtn, {
+            icon: 'mdi-pencil',
+            color: '#3159AE', // Tu color primario
+            variant: 'flat',
+            size: 'large',
+            elevation: 3,
+            class: 'text-white ma-2',
+            onClick: () => emit('edit')
+          }),
+
+          // Botón Eliminar
+          h(VBtn, {
+            icon: 'mdi-delete',
+            color: 'error',
+            variant: 'flat',
+            size: 'large',
+            elevation: 3,
+            class: 'ma-2',
+            onClick: () => emit('delete')
+          })
+        ])
+      ])
+    }
+  }
+})
 </script>
 
 <style>
@@ -691,12 +906,33 @@ const EventForm = ({
 }
 
 .calendar-container {
-  min-height: 100vh;
   margin-top: 120px;
 }
 
 .calendar-card {
   color: var(--bg);
+}
+
+@media (max-width: 960px) {
+    .calendar-wrapper {
+        height: 100vh;
+    }
+
+    .calendar-container {
+    height: 100%; 
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important; 
+    }
+
+    .calendar-card {
+        height: 85%;
+    }
+
+    .fc {
+        flex-grow: 1 !important;
+        height: 100% !important; 
+    }
 }
 
 .click-overlay {
@@ -804,12 +1040,69 @@ const EventForm = ({
   color: var(--primary);
 }
 
+@media (max-width: 960px) {
+  .fc .fc-header-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 1em !important;
+    padding: 0 4px;
+  }
+
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem !important; 
+    margin: 0 10px !important;
+    text-align: center;
+    width: 100%; 
+    order: -1; 
+  }
+
+  .fc .fc-button {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important; 
+    height: auto !important; 
+    line-height: 1.5 !important;
+  }
+
+  .fc .fc-button .fc-icon {
+    font-size: 1em !important; 
+  }
+}
+
+@media (max-width: 600px) {
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+  }
+
+  .fc-col-header-cell-cushion {
+    font-size: 0.75rem; 
+    padding-bottom: 2px;
+  }
+  
+  .fc-daygrid-day-number {
+    font-size: 0.8rem;
+    padding: 2px !important;
+  }
+
+  .fc-event-main {
+    font-size: 0.75rem !important;
+    padding: 2px 4px !important;
+  }
+}
+
 .custom-sidebar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 300px;
-  height: 100vh;
+  height: 100%;
   background: linear-gradient(190deg, var(--surface), var(--bg));
   box-shadow: 4px 0 15px rgba(0,0,0,0.1);
   z-index: 1000;
@@ -824,7 +1117,7 @@ const EventForm = ({
 }
 
 .sidebar-content {
-    position: sticky;
+    position: relative;
   top: 120px;
   padding: 20px;
   overflow-y: auto;
@@ -832,7 +1125,7 @@ const EventForm = ({
 
 .sidebar-handle {
   position: absolute;
-  top: 250px; 
+  bottom: 50px; 
   right: -40px; 
   width: 40px;
   height: 50px;
@@ -869,7 +1162,7 @@ const EventForm = ({
 /* Events panel */
 
 .right-event-panel {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   width: 400px; /* Wider for form */
@@ -900,36 +1193,6 @@ const EventForm = ({
   height: 5px;
   background-color: #e0e0e0;
   border-radius: 10px;
-}
-
-/* --- LEFT SIDEBAR (Existing) --- */
-.custom-sidebar {
-  /* ... your previous sidebar css ... */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 300px;
-  height: 100%;
-  background-color: #F1F0EC;
-  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-  z-index: 1000;
-  transform: translateX(-300px);
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.custom-sidebar.is-open { transform: translateX(0); }
-.sidebar-handle {
-  position: absolute;
-  top: 250px;
-  right: -40px;
-  width: 40px;
-  height: 50px;
-  background-color: #3159AE;
-  border-radius: 0 25px 25px 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
 }
 
 /* SWAL */

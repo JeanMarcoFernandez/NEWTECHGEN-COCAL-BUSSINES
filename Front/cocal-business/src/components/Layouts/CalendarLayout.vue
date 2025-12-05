@@ -89,7 +89,7 @@ onMounted(() => {
         <v-row class="align-center">
             <v-col cols="1" class="justify-start">
                 <router-link to="/">
-                    <v-img src="/assets/ntg_logo_transparent.png" max-height="100" class="rounded-lg"/> 
+                    <v-img src="/assets/ntg_logo_transparent.png" max-height="100" class="rounded-lg hidden-sm-and-down"/> 
                 </router-link>
             </v-col>
             <v-col cols="8" class="justify-start">
