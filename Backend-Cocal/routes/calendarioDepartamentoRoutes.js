@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { verificarToken } from '../middleware/verificarToken.js';
 import { validarRol } from '../middleware/validarRol.js';
-
+import { validarPermisoGranular } from '../middleware/validarPermisoGranular.js';
 import {
   crearCalendarioDepartamentoController,
   listarCalendariosPorProyectoController,
@@ -136,6 +136,7 @@ router.post(
   '/',
   verificarToken,
   validarRol('ADMIN', 'SUPERVISOR'),
+  validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   crearCalendarioDepartamentoController,
 );
 
@@ -253,7 +254,7 @@ router.get(
 router.patch(
   '/:idCalendario',
   verificarToken,
-  validarRol('ADMIN', 'SUPERVISOR'),
+  validarRol('ADMIN', 'SUPERVISOR'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   actualizarCalendarioDepartamentoController,
 );
 
@@ -283,7 +284,7 @@ router.patch(
 router.delete(
   '/:idCalendario',
   verificarToken,
-  validarRol('ADMIN', 'SUPERVISOR'),
+  validarRol('ADMIN', 'SUPERVISOR'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   eliminarCalendarioDepartamentoController,
 );
 
@@ -344,7 +345,7 @@ router.delete(
 router.post(
   '/:idCalendario/eventos',
   verificarToken,
-  validarRol('ADMIN', 'SUPERVISOR'),
+  validarRol('ADMIN', 'SUPERVISOR'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   crearEventoDepartamentoController,
 );
 
@@ -436,7 +437,7 @@ router.get(
 router.patch(
   '/eventos/:idEvento',
   verificarToken,
-  validarRol('ADMIN', 'SUPERVISOR'),
+  validarRol('ADMIN', 'SUPERVISOR'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   actualizarEventoDepartamentoController,
 );
 
@@ -468,7 +469,7 @@ router.patch(
 router.delete(
   '/eventos/:idEvento',
   verificarToken,
-  validarRol('ADMIN', 'SUPERVISOR'),
+  validarRol('ADMIN', 'SUPERVISOR'),validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   eliminarEventoDepartamentoController,
 );
 

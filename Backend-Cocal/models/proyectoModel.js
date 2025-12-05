@@ -64,7 +64,8 @@ export async function crearProyectoEmpresa({
   responsable,
   fecha_inicio,
   fecha_fin,
-  departamentos_involucrados = [],
+  departamentos_implicados = [],
+
 }) {
   // Verificar que la empresa exista
   const { data: empresaData, error: empresaError } = await supabase
@@ -107,8 +108,8 @@ export async function crearProyectoEmpresa({
   const proyecto = proyectoData;
 
   // Insertar departamentos implicados (si mandas array)
-  if (Array.isArray(departamentos_involucrados) && departamentos_involucrados.length > 0) {
-    const rows = departamentos_involucrados.map((idDepto) => ({
+  if (Array.isArray(departamentos_implicados) && departamentos_implicados.length > 0) {
+    const rows = departamentos_implicados.map((idDepto) => ({
       id_proyecto: proyecto.id,
       id_departamento: idDepto,
     }));

@@ -29,6 +29,7 @@ export async function refreshToken(req, res) {
         id: decoded.id,
         rol: decoded.rol,
         correo: decoded.correo,
+        id_empresa: decoded.id_empresa,
         ultimaActividad: Date.now(),
       },
       process.env.JWT_SECRET,
