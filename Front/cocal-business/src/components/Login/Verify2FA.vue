@@ -13,7 +13,8 @@ const nombre = route.query.nombre || "";
 const codigo = ref(null)
 const message = ref('')
 const error = ref('')
-const loading = ref(false)
+const loading1 = ref(false)
+const loading2 = ref(false)
 const snackbar = ref(false);
 const snackbarError = ref(false);
 
@@ -22,7 +23,7 @@ async function verifyCode() {
   snackbarError.value = false
   error.value = ''
   message.value = ''
-  loading.value = true
+  loading1.value = true
 
   try {
     const { data } = await verificar2FA(correo, codigo.value);
@@ -37,11 +38,12 @@ async function verifyCode() {
     error.value = err.response?.data?.message || "Error al verificar el código.";
     snackbarError.value = true;
   } finally {
-    loading.value = false;
+    loading1.value = false;
   }
 }
 
 async function resend() {
+  loading2.value = true
   try {
     await reenviar2FA(usuario_id, correo, nombre);
     message.value = "Nuevo código enviado al correo.";
@@ -49,6 +51,8 @@ async function resend() {
   } catch (err) {
     error.value = "No se pudo reenviar el código.";
     snackbarError.value = true;
+  } finally {
+    loading2.value = false;
   }
 }
 
@@ -79,7 +83,7 @@ async function resend() {
                 <v-btn
                 type="submit"
                 class="reset-btn"
-                :loading="loading"
+                :loading="loading1"
                 block
                 rounded
                 >
@@ -90,7 +94,7 @@ async function resend() {
         <v-row class="py-4">
             <v-btn
             class="reset-btn"
-            :loading="loading"
+            :loading="loading2"
             block
             rounded
             @click="resend"

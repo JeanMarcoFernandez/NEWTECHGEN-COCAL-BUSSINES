@@ -114,8 +114,20 @@ onMounted(() => {
 @import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap'); /*Zalando Sans*/
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap'); /*Roboto Flex*/
 
+:root {
+  --bg: #F1F0EC;         /* Light Beige */
+  --surface: #E7ECF3;    /* Light Blue/Grey */
+  --primary: #3159AE;    /* Medium Blue */
+  --secondary: #183581;  /* Deep Blue */
+  --accent: #061244;     /* Dark Navy */
+  
+  --font-display: 'Funnel Display', sans-serif;
+  --font-roboto: 'Roboto Flex', sans-serif;
+  --font-tinos: 'Tinos', serif;
+}
+
 .v-main {
-  background-color: #F1F0EC;
+  background-color: var(--bg);
 }
 
 </style>
@@ -123,25 +135,25 @@ onMounted(() => {
 <style scoped>
 .v-footer{
   min-height: 200px;
-  background: linear-gradient(120deg, #061244, #183581);
+  background: linear-gradient(120deg, var(--accent), var(--secondary));
 }
 
 .footer-title{
   font-family: 'Tinos', serif;
-  color: #E7ECF3;
+  color: var(--surface);
   font-weight: bold;
   font-size: large;
 }
 
 .footer-text{
   font-family: 'Red Hat Text', sans-serif;
-  color: #E7ECF3;
+  color: var(--surface);
   font-size: medium;
 }
 
 .footer-icon {
   margin: 5px 15px;
-  color: #E7ECF3;
+  color: var(--surface);
 }
 
 .social-media {
@@ -160,7 +172,7 @@ onMounted(() => {
 }
 
 .map-tooltip {
-  color: #E7ECF3;
+  color: var(--surface);
   border-radius: 20px;
 }
 

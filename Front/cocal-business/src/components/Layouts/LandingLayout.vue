@@ -62,7 +62,7 @@ onMounted(() => {
 
 <style scoped>
 .app-bar-login-btn, .app-bar-register-btn {
-  font-family: 'Funnel Display', sans-serif;
+  font-family: var(--font-display);
   border-radius: 15px;
   margin: 5px;
   padding: 10px 20px;
@@ -74,26 +74,26 @@ onMounted(() => {
   outline: none; 
 }
 .app-bar-login-btn {
-  color: #E7ECF3;
-  background-color: #183581;
+  color: var(--surface);
+  background-color: var(--secondary);
   border: 2px solid transparent;
 }
 
 .app-bar-login-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-color: #183581;
+  border-color: var(--secondary);
 }
 
 .app-bar-register-btn {
-  color: #183581;
-  background-color: #E7ECF3;
+  color: var(--secondary);
+  background-color: var(--surface);
   border: 2px solid transparent;
 }
 
 .app-bar-register-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  border-color: #E7ECF3;
+  border-color: var(--surface);
 }
 </style>

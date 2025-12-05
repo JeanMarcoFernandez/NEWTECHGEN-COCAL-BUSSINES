@@ -53,7 +53,7 @@ const handleLogin = async () => {
       localStorage.setItem('usuario', JSON.stringify(data.usuario))
       message.value = 'Inicio de sesión exitoso.'
       snackbar.value = true
-      router.push('/home')
+      router.push('/mycalendar')
 
     } catch (err) {
       const res = err.response?.data

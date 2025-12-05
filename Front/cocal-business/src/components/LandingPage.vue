@@ -166,7 +166,7 @@ setTimeout(() => {
                             </p>
                         </v-col>
                         <v-col cols="12" sm="3">
-                            <v-btn class="btn-start" block to="/login">
+                            <v-btn class="btn-start" block to="/mycalendar">
                                 <span class="btn-text">Empezar</span>
                                 <v-icon class="arrow-icon">mdi-arrow-right</v-icon>
                             </v-btn>
@@ -499,7 +499,7 @@ setTimeout(() => {
 <style scoped>
 
 .hero-section {
-    background: linear-gradient(0deg,#F1F0EC, #3159AE);
+    background: linear-gradient(0deg,var(--bg), var(--primary));
     align-content: center;
     padding: 100px 150px;
     min-height: 800px;
@@ -511,80 +511,80 @@ setTimeout(() => {
 }
 
 .features-section {
-    background-color: #3159ae;
+    background-color: var(--primary);
 }
 
 .features-card-title {
-    font-family: 'Funnel Display', sans-serif;
+    font-family: var(--font-display);
     font-size: larger;
     font-weight: 600;
-    color: #E7ECF3;
+    color: var(--surface);
 }
 
 .features-card-text {
     font-family: 'Zalando Sans', sans-serif;
     font-size: large;
     text-align: center;
-    color: #E7ECF3;
+    color: var(--surface);
 }
 
 .calendar-section {
-    background: linear-gradient(90deg,#E7ECF3, #F1F0EC);
+    background: linear-gradient(90deg,var(--surface), var(--bg));
 }
 
 .mobile-section {
-    background: linear-gradient(90deg, #E7ECF3, #F1F0EC);
+    background: linear-gradient(90deg, var(--surface), var(--bg));
 }
 
 .contact-section {
-    background: linear-gradient(130deg, #E7ECF3, #F1F0EC);
+    background: linear-gradient(130deg, var(--surface), var(--bg));
     padding: 100px 200px;
 }
 
 .contact-card {
     border-radius: 20px;
-    border: #183581 solid 1px;
+    border: var(--secondary) solid 1px;
 }
 
 .contact-card-title {
-    font-family: 'Tinos', serif;
+    font-family: var(--font-tinos);
     font-size: x-large;
-    color: #061244;
+    color: var(--accent);
     padding: 5px 5px;
 }
 
 .contact-card-field {
-    font-family: 'Tinos', serif;
+    font-family: var(--font-tinos);
     font-size: x-large;
-    color: #061244;
+    color: var(--accent);
 }
 
 .about-section{
-    background: linear-gradient(0deg, #3159AE, #3159AE, #183581);
+    background: linear-gradient(0deg, var(--primary), var(--primary), var(--secondary));
     align-content: center;
-    border-top: #183581 solid 5px;
+    border-top: var(--secondary) solid 5px;
 }
 
 .expandable-card {
-  background: linear-gradient(135deg, #3159AE, #183581);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
 }
 
 .expandable-icon {
-    color: #E7ECF3;
+    color: var(--surface);
 }
 
 h1{
-    font-family: 'Tinos', serif;
+    font-family: var(--font-tinos);
     font-size: xx-large;
     padding-bottom: 15px;
-    color: #061244;
+    color: var(--accent);
 }
 
 h2,
 .expandable-card-title{
-    font-family: 'Tinos', serif;
+    font-family: var(--font-tinos);
     font-size: x-large;
-    color: #E7ECF3;
+    color: var(--surface);
 }
 
 .v-card-title {
@@ -596,20 +596,20 @@ h2,
     font-family: 'Zalando Sans', sans-serif;
     font-size: larger;
     text-align: justify;
-    color: #061244;
+    color: var(--accent);
 }
 
 .center-paragraph{
     font-family: 'Zalando Sans', sans-serif;
     font-size: large;
     text-align: left;
-    color: #E7ECF3;
+    color: var(--surface);
 }
 
 .btn-start {
-  font-family: 'Funnel Display', sans-serif;
+  font-family: var(--font-display);
   color: white;
-  background-color: #3159ae;
+  background-color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -636,8 +636,8 @@ h2,
 }
 
 .btn-start:hover {
-  background-color: #E7ECF3;
-  color: #3159ae;
+  background-color: var(--surface);
+  color: var(--primary);
 }
 
 .btn-start:hover .btn-text {
@@ -698,7 +698,7 @@ h2,
 }
 
 .chatbot-toggle {
-  background: linear-gradient(135deg, #3159AE, #183581) !important;
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
   box-shadow: 0 4px 20px rgba(49, 89, 174, 0.3);
   position: relative;
   transition: all 0.3s ease;
@@ -740,7 +740,7 @@ h2,
 }
 
 .chatbot-header {
-  background: linear-gradient(135deg, #3159AE, #183581);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   padding: 15px 20px;
 }
@@ -751,7 +751,7 @@ h2,
 }
 
 .assistant-name {
-  font-family: 'Tinos', serif;
+  font-family: var(--font-tinos);
   font-weight: bold;
   font-size: 16px;
 }
@@ -802,12 +802,12 @@ h2,
 .message.welcome .message-content strong {
   display: block;
   margin-bottom: 8px;
-  color: #3159AE;
+  color: var(--primary);
 }
 
 .message.user {
   align-self: flex-end;
-  background: linear-gradient(135deg, #3159AE, #183581);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   border-bottom-right-radius: 5px;
 }
@@ -854,9 +854,9 @@ h2,
 }
 
 .quick-question:hover {
-  background: #3159AE;
+  background: var(--primary);
   color: white;
-  border-color: #3159AE;
+  border-color: var(--primary);
   transform: translateY(-1px);
 }
 
@@ -877,7 +877,7 @@ h2,
 }
 
 .send-button {
-  background: linear-gradient(135deg, #3159AE, #183581) !important;
+  background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
   color: white;
 }
 

@@ -12,7 +12,9 @@ import ResetPassword from '@/components/Login/ResetPassword.vue'
 import ChangePassword from '@/components/Login/ChangePassword.vue'
 import Verify2FA from '@/components/Login/Verify2FA.vue'
 import CreateUser from '@/components/Login/CreateUser.vue'
-import HomePage from '@/components/HomePage.vue'
+
+import MyCalendar from '@/components/Calendar/MyCalendar.vue'
+import GroupCalendar from '@/components/Calendar/GroupCalendar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,10 +40,11 @@ const router = createRouter({
       ]
     },
     {
-      path: '/home',
+      path: '/mycalendar',
       component: CalendarLayout,
       children: [
-        { path: '', name: 'Home', component: HomePage }
+        { path: '', name: 'MyCalendar', component: MyCalendar },
+        { path: '/groups', name: 'Grupos', component:  GroupCalendar}
       ]
     },
     {
