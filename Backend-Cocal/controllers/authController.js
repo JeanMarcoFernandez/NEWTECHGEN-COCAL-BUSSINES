@@ -18,8 +18,38 @@ const BLOQUEO_MINUTOS = parseInt(process.env.BLOQUEO_MINUTOS || '15', 10);
 
 export async function registrarUsuario(req, res) {
   try {
-    const { correo, contrasena, nombre, apellido, cargo, rol, telefono } = req.body;
+    const {
+      id_empresa,
+      correo,
+      contrasena,
+      nombre,
+      apellido,
+      cargo,
+      rol,
+      telefono,
+    } = req.body;
 
+    // 1) Validar campos mínimos
+    if (!id_empresa || !correo || !contrasena || !nombre) {
+      return res.status(400).json({
+        message: 'id_empresa, correo, contrasena y nombre son obligatorios.',
+      });
+    }
+
+    // 2) Verificar que la empresa exista
+    const { data: empresa, error: empresaError } = await supabase
+      .from('empresa')
+      .select('id')
+      .eq('id', id_empresa)
+      .single();
+
+    if (empresaError || !empresa) {
+      return res.status(400).json({
+        message: 'La empresa indicada no existe.',
+      });
+    }
+
+    // 3) Verificar que el correo no esté ya registrado
     const { data: existente } = await supabase
       .from('usuario')
       .select('id')
@@ -30,23 +60,30 @@ export async function registrarUsuario(req, res) {
       return res.status(400).json({ message: 'El correo ya está registrado.' });
     }
 
+    // 4) Hashear la contraseña
     const hash = await bcrypt.hash(contrasena, 10);
 
-    const { error } = await supabase.from('usuario').insert([{
-      correo,
-      contrasena: hash,
-      nombre,
-      apellido,
-      cargo,
-      rol: rol || 'ADMIN',
-      telefono,
-      primer_login: false,
-      creado_por: null,
-    }]);
+    // 5) Insertar usuario con id_empresa
+    const { error } = await supabase.from('usuario').insert([
+      {
+        id_empresa,
+        correo,
+        contrasena: hash,
+        nombre,
+        apellido,
+        cargo,
+        rol: rol || 'ADMIN', // si no mandas rol, este primer usuario podría ser ADMIN
+        telefono,
+        primer_login: false,
+        creado_por: null,
+      },
+    ]);
 
     if (error) throw error;
+
     res.status(201).json({ message: 'Usuario registrado correctamente' });
   } catch (err) {
+    console.error('Error registrarUsuario:', err);
     res.status(500).json({ message: 'Error al registrar usuario', error: err.message });
   }
 }
