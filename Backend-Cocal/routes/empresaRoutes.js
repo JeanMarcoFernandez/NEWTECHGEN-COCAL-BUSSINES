@@ -103,10 +103,7 @@ const router = Router();
  *         description: Error al crear la empresa
  */
 router.post(
-  '/',
-  verificarToken,
-  validarRol('ADMIN'),
-  crearEmpresaController
+  '/',crearEmpresaController
 );
 
 /**
