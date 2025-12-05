@@ -16,8 +16,6 @@ import CreateUser from '@/components/Login/CreateUser.vue'
 import MyCalendar from '@/components/Calendar/MyCalendar.vue'
 import GroupCalendar from '@/components/Calendar/GroupCalendar.vue'
 import Resources from '@/components/Calendar/Resources.vue'
-import Resources from '@/components/Calendar/Resources.vue'
-import Empresas from '@/components/Calendar/CompanyManagement.vue'
 import CompanyManagement from '@/components/Calendar/CompanyManagement.vue'
 
 const router = createRouter({
@@ -49,7 +47,6 @@ const router = createRouter({
       children: [
         { path: '', name: 'MyCalendar', component: MyCalendar },
         { path: '/groups', name: 'Grupos', component:  GroupCalendar},
-        { path: '/resources', name: 'Recursos', component:  Resources},
         { path: '/resources', name: 'Recursos', component:  Resources},
         { path: '/empresas', name: 'Empresas', component:  CompanyManagement}
       ]
