@@ -25,11 +25,13 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-app-bar class="appbar pa-5" flat scroll-behavior="fully-hide" scroll-threshold="100" color="transparent">
+    <v-app-bar class="appbar pa-3" flat scroll-behavior="fully-hide" scroll-threshold="100" color="transparent" height="100">
         <v-row class="align-center">
             <v-col cols="1" class="justify-start">
             <router-link to="/">
-                <v-img src="/assets/ntg_logo_transparent.png" max-height="100" class="rounded-lg"/> 
+              <div style="width: 120px;" class="flex-shrink-0">
+                <v-img src="/assets/ntg_logo_transparent.png" width="120" class="rounded-lg mx-2"/> 
+              </div>
             </router-link>
             </v-col>
             <v-col cols="11" class="d-flex justify-end">

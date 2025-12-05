@@ -18,11 +18,11 @@ const navItems = ref([
     roles: ['ADMIN', 'EMPLEADO'] 
   },
   {
-    title: 'Grupos',
+    title: 'Proyectos',
     icon: 'mdi-account-group',
-    to: '/groups',
-    subtitle: 'Calendarios grupales',
-    roles: ['ADMIN', 'EMPLEADO'] 
+    to: '/',
+    subtitle: 'Proyectos',
+    roles: ['EMPLEADO'] 
   },
   {
     title: 'Empresas',
@@ -48,7 +48,7 @@ const navItems = ref([
   {
     title: 'Administración',
     icon: 'mdi-shield-crown-outline',
-    to: '/',
+    to: '/admin',
     subtitle: 'Panel de administración',
     roles: ['ADMIN'] 
   }
@@ -73,13 +73,6 @@ router.push('/');
 };
 
 onMounted(() => {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    router.push('/login')
-  }
-
-  
   const raw = localStorage.getItem('usuario');
   const jsonIndex = raw.indexOf('{');
   const jsonString = raw.slice(jsonIndex);
@@ -107,7 +100,7 @@ onMounted(() => {
                 <v-row class="username">Hola, {{ username }}</v-row>
                 <v-row class="role">{{ role }}</v-row>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="1" class="justify-end">
                 <v-btn
                 icon="mdi-logout"
                 size="large"
@@ -140,7 +133,7 @@ onMounted(() => {
       </v-list>
     </v-navigation-drawer>
 
-    <router-view/>
+    <router-view style="margin-top: 120px;"/>
 </template>
 
 <style scoped>

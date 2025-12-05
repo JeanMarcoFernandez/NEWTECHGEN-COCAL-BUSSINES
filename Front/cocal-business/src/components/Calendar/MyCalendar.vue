@@ -901,18 +901,17 @@ const EventDetails = ({
 .calendar-wrapper {
   position: relative;
   width: 100%;
-  min-height: 120vh;
+  min-height: 100vh;
   overflow: hidden;
   background-color: var(--bg);
 }
 
 .calendar-container {
-  margin-top: 120px;
   height: 100%;
 }
 
 .calendar-card {
-    height: 85%;
+    height: 100%;
   color: var(--bg);
 }
 
@@ -929,7 +928,7 @@ const EventDetails = ({
     }
 
     .calendar-card {
-        height: 85%;
+        height: 100%;
     }
 
     .fc {
@@ -1239,6 +1238,10 @@ div:where(.swal2-container) div:where(.swal2-popup) {
 
 div:where(.swal2-container) .swal2-title {
   font-family: 'Funnel Display', sans-serif !important;
+}
+
+div:where(.swal2-container) {
+  z-index: 9999 !important;
 }
 
 </style>

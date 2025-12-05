@@ -31,6 +31,7 @@ const handleRegister = async () => {
 
   try {
     await register({
+      id_empresa: 1,
       nombre: nombre.value,
       apellido: apellido.value,
       correo: correo.value,

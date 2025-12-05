@@ -58,14 +58,6 @@ const handleRegister = async () => {
   }
 };
 
-onMounted(() => {
-  userRole.value = localStorage.getItem('rol');
-  console.log(rol.value)
-
-  if(userRole.value !== 'ADMIN'){
-    router.push('/')
-  }
-});
 </script>
 
 <template>

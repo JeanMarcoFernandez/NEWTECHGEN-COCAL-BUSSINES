@@ -1,5 +1,6 @@
 <script setup>
 import { ref, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 
 const images = [
   '/assets/cocalbusiness_logo_transparent.png',
@@ -99,21 +100,21 @@ const generateBotResponse = (userMessage) => {
   let response = '';
   
   if (userMessage.includes('plan') || userMessage.includes('precio') || userMessage.includes('costo') || userMessage.includes('tarifa')) {
-    response = 'Ofrecemos tres planes adaptados a diferentes necesidades:\n\n• **Básico**: Ideal para startups - $29/mes\n• **Empresarial**: Para equipos medianos - $79/mes  \n• **Enterprise**: Soluciones personalizadas - Contáctanos\n\n¿Te gustaría conocer más detalles de cada plan?';
+    response = 'Ofrecemos tres planes adaptados a diferentes necesidades: • Básico: Ideal para startups - $29/mes • Empresarial: Para equipos medianos - $79/mes   • Enterprise: Soluciones personalizadas - Contáctanos ¿Te gustaría conocer más detalles de cada plan?';
   } else if (userMessage.includes('sincronización') || userMessage.includes('sincronizar') || userMessage.includes('funcion')) {
-    response = 'La sincronización en CoCal Business funciona en tiempo real:\n\n• Conecta calendarios de Google, Outlook y Apple\n• Muestra disponibilidad de todo el equipo al instante\n• Evita conflictos de horarios automáticamente\n• Sincronización cross-platform las 24/7\n\n¿Te gustaría una demostración?';
+    response = 'La sincronización en CoCal Business funciona en tiempo real: • Conecta calendarios de Google, Outlook y Apple • Muestra disponibilidad de todo el equipo al instante • Evita conflictos de horarios automáticamente • Sincronización cross-platform las 24/7 ¿Te gustaría una demostración?';
   } else if (userMessage.includes('app') || userMessage.includes('móvil') || userMessage.includes('celular')) {
-    response = '¡Sí! Tenemos app móvil nativa para:\n\n📱 **iOS**: Disponible en App Store\n📱 **Android**: Disponible en Google Play Store\n\nCaracterísticas móviles:\n• Notificaciones en tiempo real\n• Gestión de reuniones on-the-go\n• Reserva de recursos desde cualquier lugar\n• Sincronización offline';
+    response = '¡Sí! Tenemos app móvil nativa para: 📱 iOS: Disponible en App Store 📱 Android: Disponible en Google Play Store Características móviles: • Notificaciones en tiempo real • Gestión de reuniones on-the-go • Reserva de recursos desde cualquier lugar • Sincronización offline';
   } else if (userMessage.includes('soporte') || userMessage.includes('ayuda') || userMessage.includes('problema')) {
-    response = 'Ofrecemos múltiples canales de soporte:\n\n🕒 **Horario**: Lunes a Viernes 8:00-18:00\n📞 **Chat en vivo**: Disponible en la plataforma\n📧 **Email**: soporte@cocalbusiness.com\n📚 **Centro de ayuda**: Documentación completa\n\n¿En qué específicamente necesitas ayuda?';
+    response = 'Ofrecemos múltiples canales de soporte: 🕒 Horario: Lunes a Viernes 8:00-18:00 📞 Chat en vivo: Disponible en la plataforma 📧 Email: soporte@cocalbusiness.com 📚 Centro de ayuda: Documentación completa ¿En qué específicamente necesitas ayuda?';
   } else if (userMessage.includes('registro') || userMessage.includes('registrarse') || userMessage.includes('cuenta') || userMessage.includes('empezar')) {
-    response = '¡Empezar es muy fácil!\n\n1. Haz clic en "Empezar" en la página principal\n2. Completa tu información básica\n3. Verifica tu email\n4. Configura tu equipo en 5 minutos\n\n¿Quieres que te guíe paso a paso?';
+    response = '¡Empezar es muy fácil! 1. Haz clic en "Empezar" en la página principal 2. Completa tu información básica 3. Verifica tu email 4. Configura tu equipo en 5 minutos ¿Quieres que te guíe paso a paso?';
   } else if (userMessage.includes('equipo') || userMessage.includes('colaboración')) {
-    response = 'La gestión de equipos en CoCal Business incluye:\n\n• Hasta 50 miembros por equipo (según plan)\n• Roles y permisos personalizables\n• Visibilidad de disponibilidad grupal\n• Comentarios y retroalimentación integrada\n• Historial completo de actividades';
+    response = 'La gestión de equipos en CoCal Business incluye: • Hasta 50 miembros por equipo (según plan) • Roles y permisos personalizables • Visibilidad de disponibilidad grupal • Comentarios y retroalimentación integrada • Historial completo de actividades';
   } else if (userMessage.includes('recurso') || userMessage.includes('sala') || userMessage.includes('equipo')) {
-    response = 'Puedes gestionar recursos como:\n\n🏢 Salas de reuniones\n📊 Proyectores y pantallas\n💻 Equipos de videoconferencia\n🚗 Vehículos corporativos\n\nTodos los recursos se reservan automáticamente evitando conflictos.';
+    response = 'Puedes gestionar recursos como: 🏢 Salas de reuniones 📊 Proyectores y pantallas 💻 Equipos de videoconferencia 🚗 Vehículos corporativos Todos los recursos se reservan automáticamente evitando conflictos.';
   } else {
-    response = 'Gracias por tu mensaje. Como asistente de CoCal Business, puedo ayudarte con información sobre:\n\n• Planes y precios\n• Funcionalidades de sincronización\n• App móvil\n• Soporte técnico\n• Proceso de registro\n• Gestión de equipos\n\n¿Sobre cuál de estos temas te gustaría conocer más?';
+    response = 'Gracias por tu mensaje. Como asistente de CoCal Business, puedo ayudarte con información sobre: • Planes y precios • Funcionalidades de sincronización • App móvil • Soporte técnico • Proceso de registro • Gestión de equipos ¿Sobre cuál de estos temas te gustaría conocer más?';
   }
   
   chatMessages.value.push({
@@ -138,6 +139,17 @@ const getCurrentTime = () => {
   const now = new Date();
   return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 };
+
+const router = useRouter()
+
+const goToStart = () => {
+  const token = localStorage.getItem('token')
+  if (!token){
+    router.push('/login')
+  } else {
+    router.push('/mycalendar')
+  }
+}
 
 // Auto-open chatbot after 10 seconds if user hasn't interacted
 setTimeout(() => {
@@ -166,7 +178,7 @@ setTimeout(() => {
                             </p>
                         </v-col>
                         <v-col cols="12" sm="3">
-                            <v-btn class="btn-start" block to="/mycalendar">
+                            <v-btn class="btn-start" block @click="goToStart">
                                 <span class="btn-text">Empezar</span>
                                 <v-icon class="arrow-icon">mdi-arrow-right</v-icon>
                             </v-btn>

@@ -168,15 +168,30 @@
             <v-divider></v-divider>
 
             <v-card-actions class="pa-4 bg-grey-lighten-5">
-              <v-btn 
-                block 
-                variant="outlined" 
-                color="primary"
-                append-icon="mdi-arrow-right"
-                @click.stop="enterCompany(company)"
-              >
-                Entrar al Panel
-              </v-btn>
+              <v-row>
+                <v-col cols="12">
+                  <v-btn 
+                    block 
+                    variant="outlined" 
+                    color="primary"
+                    append-icon="mdi-arrow-right"
+                    @click.stop="enterCompany(company)"
+                  >
+                    Entrar al Panel
+                  </v-btn>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn 
+                    block 
+                    variant="outlined" 
+                    color="primary"
+                    append-icon="mdi-arrow-right"
+                    @click.stop="enterDepartment(company)"
+                  >
+                    Ver departamentos
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -560,20 +575,15 @@
     </v-navigation-drawer>
 
     <!-- SNACKBAR PARA NOTIFICACIONES -->
-    <v-snackbar v-model="showSnackbar" :color="snackbarColor" :timeout="4000" location="top right">
-      <div class="d-flex align-center">
-        <v-icon class="mr-2">{{ snackbarIcon }}</v-icon>
-        <span>{{ snackbarMessage }}</span>
-      </div>
-      <template v-slot:actions>
-        <v-btn icon="mdi-close" variant="text" size="small" @click="showSnackbar = false"></v-btn>
-      </template>
+    <v-snackbar v-model="showSnackbar" :color="snackbarColor" :timeout="2000">
+      <span>{{ snackbarMessage }}</span>
     </v-snackbar>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
@@ -993,6 +1003,20 @@ const exitCompany = () => {
   }
 }
 
+const router = useRouter()
+
+const enterDepartment = (company) => {
+  router.push({
+    name: 'Departamentos',
+    params: { 
+      id: company.id 
+    },
+    query: {
+      name: company.nombre
+    }
+  })
+}
+
 // Manejar botón "Atrás" del navegador
 const handlePopState = (event) => {
   if (!event.state || event.state.view !== 'dashboard') {
@@ -1089,14 +1113,16 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-color: var(--bg);
-  padding-top: 140px;
   overflow-y: auto;
+  margin-bottom: 20px;
 }
 
 .content-container {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  background-color: white;
+  border-radius: 20px;
 }
 
 .page-title {
