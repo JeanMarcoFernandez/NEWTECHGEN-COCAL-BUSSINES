@@ -901,19 +901,22 @@ const EventDetails = ({
 .calendar-wrapper {
   position: relative;
   width: 100%;
+  min-height: 120vh;
   overflow: hidden;
   background-color: var(--bg);
 }
 
 .calendar-container {
   margin-top: 120px;
+  height: 100%;
 }
 
 .calendar-card {
+    height: 85%;
   color: var(--bg);
 }
 
-@media (max-width: 960px) {
+@media (max-width: 600px) {
     .calendar-wrapper {
         height: 100vh;
     }
@@ -956,6 +959,8 @@ const EventDetails = ({
   
   font-family: var(--font-roboto);
   color: var(--accent);
+  height: 100% !important;
+  flex-grow: 1 !important;
 }
 
 .fc .fc-toolbar-title {
