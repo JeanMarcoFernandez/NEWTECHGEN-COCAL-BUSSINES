@@ -24,6 +24,10 @@ import calendarioDepartamentoRoutes from './routes/calendarioDepartamentoRoutes.
 import calendarioVinculoRoutes from './routes/calendarioVinculoRoutes.js';
 import recursoRoutes from './routes/recursoRoutes.js';
 import reservaRecursoRoutes from './routes/reservaRecursoRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import recurso15Routes from './routes/recurso15Routes.js';
+import mantenimientoRoutes from './routes/mantenimientoRoutes.js';
+
 import permisoRoutes from './routes/permisoRoutes.js';
 const app = express();
 
@@ -51,8 +55,12 @@ app.use('/api/calendarios/departamento', calendarioDepartamentoRoutes);
 app.use('/api/calendarios/vinculos', calendarioVinculoRoutes);
 app.use('/api/recursos', recursoRoutes);
 app.use('/api/reservas-recursos', reservaRecursoRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/recurso15', recurso15Routes);
+app.use('/api/mantenimiento', mantenimientoRoutes);
 app.use('/api/permisos', permisoRoutes);
 //Swagger
 configurarSwagger(app);
+
 
 export default app;
