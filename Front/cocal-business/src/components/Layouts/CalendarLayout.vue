@@ -41,7 +41,7 @@ const navItems = ref([
   {
     title: 'Reportes',
     icon: 'mdi-chart-bar',
-    to: '/',
+    to: '/analisis',
     subtitle: 'Estadísticas y reportes',
     roles: ['ADMIN', 'EMPLEADO'] 
   },
