@@ -41,7 +41,7 @@ const navItems = ref([
   {
     title: 'Usuarios',
     icon: 'mdi-account-multiple',
-    to: '/admin',
+    to: '/usuarios',
     subtitle: 'Gestión de usuarios',
     roles: ['ADMIN'] 
   },
@@ -55,7 +55,7 @@ const navItems = ref([
   {
     title: 'Reportes',
     icon: 'mdi-file-document-multiple-outline',
-    to: '/reports',
+    to: '/reportes',
     subtitle: 'Reportes',
     roles: ['ADMIN'] 
   }
