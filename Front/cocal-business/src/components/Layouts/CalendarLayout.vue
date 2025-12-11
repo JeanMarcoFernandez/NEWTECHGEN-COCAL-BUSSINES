@@ -36,27 +36,47 @@ const navItems = ref([
     icon: 'mdi-projector',
     to: '/resources',
     subtitle: 'Administración de recursos',
-    roles: ['ADMIN', 'EMPLEADO'] 
+    roles: ['ADMIN'] 
   },
   {
-    title: 'Reportes',
+    title: 'Usuarios',
+    icon: 'mdi-account-multiple',
+    to: '/admin',
+    subtitle: 'Gestión de usuarios',
+    roles: ['ADMIN'] 
+  },
+  {
+    title: 'Analytics',
     icon: 'mdi-chart-bar',
     to: '/analisis',
     subtitle: 'Estadísticas y reportes',
-    roles: ['ADMIN', 'EMPLEADO'] 
+    roles: ['ADMIN'] 
   },
   {
-    title: 'Administración',
-    icon: 'mdi-shield-crown-outline',
-    to: '/admin',
-    subtitle: 'Panel de administración',
+    title: 'Reportes',
+    icon: 'mdi-file-document-multiple-outline',
+    to: '/reports',
+    subtitle: 'Reportes',
     roles: ['ADMIN'] 
   }
 ])
 
 const currentSubtitle = computed(() => {
-  const match = navItems.value.find(item => item.to === route.path)
-  return match ? match.subtitle : 'Mi Calendario'
+  if (route.name) {
+    switch (route.name) {
+      case 'MyCalendar': return 'Mi Calendario'
+      case 'Empresas': return 'Gestión de Empresas'
+      case 'Departamentos': return `Gestión de Empresas > Departamentos`
+      case 'DepartmentProjects': return `Gestión de Empresas > Departamentos > Proyectos`
+      case 'ProjectCalendar': return `Gestión de Empresas > Departamentos > Proyectos > Calendario`
+      case 'Recursos': return 'Administración de Recursos'
+      case 'Usuarios': return 'Gestión de Usuarios'
+      case 'Analisis': return 'Estadísticas y dashboards'
+      case 'Reports': return 'Reportes'
+      default: 'Mi Calendario'
+    }
+  }
+  return 'Mi Calendario'
 })
 
 const filteredNav = computed(() => {

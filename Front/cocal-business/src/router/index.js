@@ -20,6 +20,8 @@ import Analitic from '@/components/Calendar/Analitics.vue'
 import Departments from '@/components/Calendar/Departments.vue'
 import Projects from '@/components/Calendar/Projects.vue'
 import ProjectCalendar from '@/components/Calendar/ProjectCalendar.vue'
+import Empresas from '@/components/Calendar/CompanyManagement.vue'
+import Reports from '@/components/Calendar/Reports.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,7 +58,8 @@ const router = createRouter({
         { path: '/analisis', name: 'Analisis', component:  Analitic},
         { path: '/empresas/:id/departamentos', name: 'Departamentos', component: Departments, props: (route) => ({ companyId: route.params.id, companyName: route.query.name }) },
         { path: '/departamentos/:id/proyectos', name: 'DepartmentProjects', component: Projects, props: (route) => ({ departmentId: route.params.id, departmentName: route.query.name }) },
-        { path: 'proyectos/:id/calendario', name: 'ProjectCalendar', component: ProjectCalendar, props: true}
+        { path: 'proyectos/:id/calendario', name: 'ProjectCalendar', component: ProjectCalendar, props: true},
+        { path: '/reports', name: 'Reports', component:  Reports}
       ]
     },
     {

@@ -460,6 +460,7 @@
       temporary
       width="450"
       class="form-drawer elevation-5"
+      style="padding-top: 50px;"
     >
       <div class="pa-4 border-b d-flex align-center justify-space-between bg-grey-lighten-5">
         <div>
@@ -549,16 +550,7 @@
       </v-form>
 
       <template v-slot:append>
-        <div class="pa-4 border-t bg-white d-flex gap-3">
-          <v-btn 
-            variant="outlined" 
-            color="grey" 
-            block 
-            size="large"
-            @click="showFormPanel = false"
-          >
-            Cancelar
-          </v-btn>
+        <div class="pa-4 border-t bg-white d-flex gap-3">cd
           <v-btn 
             block 
             size="large" 
@@ -587,95 +579,347 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-import CompanyList from '@/Company/CompanyList.vue'
-import CompanyDashboard from '@/Company/CompanyDashboard.vue'
-import CompanyForm from '@/Company/CompanyForm.vue'
-import NotificationSnackbar from '@/Company/NotificationSnackbar.vue'
+// Agregar al inicio del script, después de los refs
+const formRef = ref(null)
+const searchTerm = ref('')
+const filterRubro = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 9
+const filteredCompanies = ref([])
 
-// Estado
-const currentView = ref('list')
-const selectedCompany = ref(null)
-const showFormPanel = ref(false)
-const isEditing = ref(false)
-const formCompany = ref(null)
+// Computed para páginas
+const totalPages = computed(() => Math.ceil(filteredCompanies.value.length / itemsPerPage))
 
-// API y estado compartido
-const {
-  companies,
-  loading,
-  loadingDetails,
-  showSnackbar,
-  snackbarMessage,
-  snackbarColor,
-  fetchCompanies,
-  fetchCompanyDetails,
-  createCompany,
-  updateCompany,
-  deleteCompany,
-  showNotification
-} = useCompanyApi()
-
-// Navegación
-const enterCompany = async (company) => {
-  selectedCompany.value = company
-  currentView.value = 'dashboard'
-  localStorage.setItem('currentCompany', JSON.stringify(company))
-  window.history.pushState({ view: 'dashboard', companyId: company.id }, '')
-  await fetchCompanyDetails(company.id)
+// Métodos nuevos para el template
+const filterCompanies = () => {
+  let filtered = [...companies.value]
+  
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase()
+    filtered = filtered.filter(company => 
+      company.nombre.toLowerCase().includes(term) ||
+      company.nit.toLowerCase().includes(term) ||
+      (company.rubro && company.rubro.toLowerCase().includes(term))
+    )
+  }
+  
+  if (filterRubro.value && filterRubro.value !== 'Todos') {
+    filtered = filtered.filter(company => company.rubro === filterRubro.value)
+  }
+  
+  filteredCompanies.value = filtered
+  currentPage.value = 1
+  paginateCompanies()
 }
 
-const exitCompany = () => {
-  selectedCompany.value = null
-  currentView.value = 'list'
-  localStorage.removeItem('currentCompany')
-  if (window.history.state?.view === 'dashboard') {
-    window.history.back()
+const paginateCompanies = () => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  // Para uso en template, mostrar solo la página actual
+}
+
+const clearFilters = () => {
+  searchTerm.value = ''
+  filterRubro.value = ''
+  filterCompanies()
+}
+
+const getLogoColor = (name) => {
+  const colors = ['primary', 'secondary', 'success', 'warning', 'info', 'error']
+  const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return colors[hash % colors.length]
+}
+
+const copyCompanyInfo = (company) => {
+  const text = `Empresa: ${company.nombre}\nNIT: ${company.nit}\nRubro: ${company.rubro}\nDirección: ${company.direccion}\nTeléfono: ${company.telefono}\nSitio Web: ${company.sitio_web}`
+  navigator.clipboard.writeText(text)
+  showNotification('Información copiada al portapapeles', 'success', 'mdi-content-copy')
+}
+
+const manageStructure = () => {
+  showNotification('Función de gestión de estructura en desarrollo', 'info')
+}
+
+const exportCompanyData = () => {
+  showNotification('Función de exportación en desarrollo', 'info')
+}
+
+const getNotificationIcon = (color) => {
+  switch(color) {
+    case 'success': return 'mdi-check-circle'
+    case 'error': return 'mdi-alert-circle'
+    case 'warning': return 'mdi-alert'
+    case 'info': return 'mdi-information'
+    default: return 'mdi-information'
   }
 }
 
-// Gestión de formulario
-const openCreatePanel = () => {
-  isEditing.value = false
-  formCompany.value = null
-  showFormPanel.value = true
+// --- CONFIGURACIÓN BASE ---
+const API_BASE = 'http://localhost:3000/api'
+
+// --- HEADERS CON AUTENTICACIÓN ---
+const getHeaders = () => {
+  const token = localStorage.getItem('token') || 
+                JSON.parse(localStorage.getItem('usuario') || '{}').token ||
+                JSON.parse(localStorage.getItem('usuario') || '{}').access_token
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  
+  return headers
 }
 
-const openEditPanel = (company) => {
-  isEditing.value = true
-  formCompany.value = { ...company }
-  showFormPanel.value = true
-}
+// --- ESTADO REACTIVO ---
+const companies = ref([])
+const loading = ref(false)
+const loadingDetails = ref(false)
+const submitting = ref(false)
+const showFormPanel = ref(false)
+const isEditing = ref(false)
+const currentView = ref('list') // 'list' o 'dashboard'
+const selectedCompany = ref(null)
 
-const closeFormPanel = () => {
-  showFormPanel.value = false
-  formCompany.value = null
-}
+// Snackbar notifications
+const showSnackbar = ref(false)
+const snackbarMessage = ref('')
+const snackbarColor = ref('success')
 
-const submitForm = async (companyData) => {
+const form = reactive({
+  id: null,
+  nombre: '',
+  nit: '',
+  rubro: '',
+  direccion: '',
+  telefono: '',
+  sitio_web: ''
+})
+
+const rubrosOptions = [
+  'Tecnología',
+  'Consultoría', 
+  'Salud',
+  'Educación',
+  'Finanzas',
+  'Comercio',
+  'Construcción',
+  'Manufactura',
+  'Transporte',
+  'Turismo',
+  'Agroindustria',
+  'Otros'
+]
+
+// ==========================================
+// IMPLEMENTACIÓN COMPLETA DE LAS 5 APIS
+// ==========================================
+
+// [1] GET /api/empresas - Listar todas las empresas
+const fetchCompanies = async () => {
+  loading.value = true
   try {
+    const response = await axios.get(`${API_BASE}/empresas`, {
+      headers: getHeaders(),
+      validateStatus: status => status === 200
+    })
+    
+    companies.value = response.data
+    showNotification('Empresas cargadas correctamente', 'success')
+  } catch (error) {
+    console.error('Error al cargar empresas:', error)
+    
+    if (error.response?.status === 401) {
+      showNotification('Sesión expirada. Por favor, inicie sesión nuevamente.', 'error')
+      // Opcional: redirigir a login
+    } else if (error.response?.status === 403) {
+      showNotification('No tiene permisos para ver empresas.', 'error')
+    } else {
+      showNotification('Error al cargar empresas', 'error')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// [2] GET /api/empresas/{id} - Obtener una empresa por ID
+const fetchCompanyDetails = async (id) => {
+  if (!id) return
+  
+  loadingDetails.value = true
+  try {
+    const response = await axios.get(`${API_BASE}/empresas/${id}`, {
+      headers: getHeaders(),
+      validateStatus: status => status === 200
+    })
+    
+    selectedCompany.value = response.data
+    localStorage.setItem('currentCompany', JSON.stringify(response.data))
+  } catch (error) {
+    console.error('Error al cargar detalles:', error)
+    
+    if (error.response?.status === 404) {
+      showNotification('Empresa no encontrada', 'error')
+      exitCompany()
+    } else if (error.response?.status === 401) {
+      showNotification('Sesión expirada', 'error')
+    } else if (error.response?.status === 403) {
+      showNotification('No tiene permisos para ver esta empresa', 'error')
+    } else {
+      showNotification('Error al cargar detalles', 'error')
+    }
+  } finally {
+    loadingDetails.value = false
+  }
+}
+
+// [3] POST /api/empresas - Crear una nueva empresa
+const createCompany = async (companyData) => {
+  submitting.value = true
+  try {
+    const response = await axios.post(`${API_BASE}/empresas`, companyData, {
+      headers: getHeaders(),
+      validateStatus: status => status === 201
+    })
+    
+    showNotification('Empresa creada exitosamente', 'success')
+    return response.data
+  } catch (error) {
+    console.error('Error al crear empresa:', error)
+    
+    if (error.response?.status === 400) {
+      throw new Error(error.response?.data?.message || 'Datos inválidos')
+    } else if (error.response?.status === 401) {
+      throw new Error('Sesión expirada')
+    } else if (error.response?.status === 403) {
+      throw new Error('No tiene permisos para crear empresas')
+    } else {
+      throw new Error('Error al crear la empresa')
+    }
+  } finally {
+    submitting.value = false
+  }
+}
+
+// [4] PUT /api/empresas/{id} - Actualizar una empresa existente
+const updateCompany = async (id, companyData) => {
+  submitting.value = true
+  try {
+    const response = await axios.put(`${API_BASE}/empresas/${id}`, companyData, {
+      headers: getHeaders(),
+      validateStatus: status => status === 200
+    })
+    
+    showNotification('Empresa actualizada exitosamente', 'success')
+    return response.data
+  } catch (error) {
+    console.error('Error al actualizar empresa:', error)
+    
+    if (error.response?.status === 400) {
+      throw new Error(error.response?.data?.message || 'Datos inválidos')
+    } else if (error.response?.status === 401) {
+      throw new Error('Sesión expirada')
+    } else if (error.response?.status === 403) {
+      throw new Error('No tiene permisos para actualizar empresas')
+    } else if (error.response?.status === 404) {
+      throw new Error('Empresa no encontrada')
+    } else {
+      throw new Error('Error al actualizar la empresa')
+    }
+  } finally {
+    submitting.value = false
+  }
+}
+
+// [5] DELETE /api/empresas/{id} - Eliminar una empresa
+const deleteCompany = async (id) => {
+  try {
+    await axios.delete(`${API_BASE}/empresas/${id}`, {
+      headers: getHeaders(),
+      validateStatus: status => status === 204
+    })
+    
+    showNotification('Empresa eliminada exitosamente', 'success')
+    return true
+  } catch (error) {
+    console.error('Error al eliminar empresa:', error)
+    
+    if (error.response?.status === 401) {
+      throw new Error('Sesión expirada')
+    } else if (error.response?.status === 403) {
+      throw new Error('No tiene permisos para eliminar empresas')
+    } else if (error.response?.status === 404) {
+      throw new Error('Empresa no encontrada')
+    } else {
+      throw new Error('Error al eliminar la empresa')
+    }
+  }
+}
+
+// ==========================================
+// FUNCIONES PRINCIPALES DEL COMPONENTE
+// ==========================================
+
+// Función principal para enviar formulario (crear o editar)
+const submitForm = async () => {
+  // Validación básica
+  if (!form.nombre.trim()) {
+    showNotification('El nombre es requerido', 'error')
+    return
+  }
+  
+  if (!form.nit.trim()) {
+    showNotification('El NIT es requerido', 'error')
+    return
+  }
+  
+  try {
+    let result
+    
     if (isEditing.value) {
-      const result = await updateCompany(formCompany.value.id, companyData)
+      // Actualizar empresa existente
+      result = await updateCompany(form.id, {
+        nombre: form.nombre,
+        nit: form.nit,
+        rubro: form.rubro,
+        direccion: form.direccion,
+        telefono: form.telefono,
+        sitio_web: form.sitio_web
+      })
       
       // Actualizar en la lista
-      const index = companies.value.findIndex(c => c.id === formCompany.value.id)
+      const index = companies.value.findIndex(c => c.id === form.id)
       if (index !== -1) {
         companies.value[index] = { ...companies.value[index], ...result }
       }
       
       // Si estamos viendo esta empresa, actualizar detalles
-      if (selectedCompany.value?.id === formCompany.value.id) {
+      if (selectedCompany.value?.id === form.id) {
         selectedCompany.value = { ...selectedCompany.value, ...result }
       }
     } else {
-      const result = await createCompany(companyData)
+      // Crear nueva empresa
+      result = await createCompany({
+        nombre: form.nombre,
+        nit: form.nit,
+        rubro: form.rubro,
+        direccion: form.direccion,
+        telefono: form.telefono,
+        sitio_web: form.sitio_web
+      })
+      
+      // Agregar a la lista
       companies.value.push(result)
     }
     
+    // Cerrar panel y limpiar formulario
     showFormPanel.value = false
-    showNotification(
-      isEditing.value ? 'Empresa actualizada exitosamente' : 'Empresa creada exitosamente',
-      'success'
-    )
+    resetForm()
+    
   } catch (error) {
     Swal.fire({
       title: 'Error',
@@ -686,7 +930,7 @@ const submitForm = async (companyData) => {
   }
 }
 
-// Eliminación
+// Confirmar eliminación de empresa
 const confirmDeleteCompany = async (company) => {
   const result = await Swal.fire({
     title: '¿Eliminar empresa?',
@@ -702,8 +946,11 @@ const confirmDeleteCompany = async (company) => {
   if (result.isConfirmed) {
     try {
       await deleteCompany(company.id)
+      
+      // Eliminar de la lista
       companies.value = companies.value.filter(c => c.id !== company.id)
       
+      // Si estamos viendo esta empresa, regresar al listado
       if (selectedCompany.value?.id === company.id) {
         exitCompany()
       }
@@ -771,24 +1018,80 @@ const handlePopState = (event) => {
   }
 }
 
-// Lifecycle
+// ==========================================
+// FUNCIONES AUXILIARES
+// ==========================================
+
+// Notificaciones
+const showNotification = (message, color = 'success') => {
+  snackbarMessage.value = message
+  snackbarColor.value = color
+  showSnackbar.value = true
+}
+
+// Panel de creación
+const openCreatePanel = () => {
+  isEditing.value = false
+  resetForm()
+  showFormPanel.value = true
+}
+
+// Panel de edición
+const openEditPanel = (company) => {
+  isEditing.value = true
+  Object.assign(form, company)
+  showFormPanel.value = true
+}
+
+// Resetear formulario
+const resetForm = () => {
+  Object.assign(form, {
+    id: null,
+    nombre: '',
+    nit: '',
+    rubro: '',
+    direccion: '',
+    telefono: '',
+    sitio_web: ''
+  })
+}
+
+// Obtener iniciales para avatar
+const getInitials = (name) => {
+  if (!name) return 'EM'
+  const words = name.split(' ')
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase()
+  }
+  return name.substring(0, 2).toUpperCase()
+}
+
+// ==========================================
+// LIFECYCLE HOOKS
+// ==========================================
+
 onMounted(async () => {
+  // Configurar listener para botón "Atrás"
   window.addEventListener('popstate', handlePopState)
   
-  // Restaurar estado previo
+  // Restaurar estado previo si existe
   const savedCompany = localStorage.getItem('currentCompany')
   if (savedCompany) {
     try {
       const company = JSON.parse(savedCompany)
       selectedCompany.value = company
       currentView.value = 'dashboard'
+      
+      // Cargar detalles frescos
       await fetchCompanyDetails(company.id)
     } catch (e) {
       console.error('Error al restaurar empresa:', e)
       localStorage.removeItem('currentCompany')
+      currentView.value = 'list'
     }
   }
   
+  // Cargar lista de empresas
   await fetchCompanies()
 })
 

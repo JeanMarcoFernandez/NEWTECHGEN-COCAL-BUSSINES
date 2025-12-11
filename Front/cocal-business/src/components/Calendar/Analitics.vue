@@ -1,5 +1,5 @@
 <template>
-  <div class="analytics-dashboard">
+  <div class="analytics-dashboard" style="background-color: white; border-radius: 20px; margin-bottom: 20px;">
     <!-- Header -->
     <div class="dashboard-header">
       <h2>
@@ -1745,7 +1745,6 @@ export default {
 
 <style scoped>
 .dashboard-header {
-  margin-top: 130px;
   display: flex;
   justify-content: space-between;
   align-items: center;

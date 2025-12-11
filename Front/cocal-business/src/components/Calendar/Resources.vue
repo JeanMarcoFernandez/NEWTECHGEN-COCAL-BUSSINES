@@ -589,6 +589,9 @@ onMounted(() => {
   padding-left: 20px;
   padding-right: 20px;
   transition: opacity 0.3s ease;
+  background-color: white;
+  border-radius: 20px;
+  margin-bottom: 20px;
 }
 .resource-container.dimmed {
   opacity: 0.5;
