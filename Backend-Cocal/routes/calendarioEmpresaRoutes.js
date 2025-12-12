@@ -122,7 +122,6 @@ router.post(
   '/proyecto/:idProyecto',
   verificarToken,
   validarRol('ADMIN'),
-  validarPermisoGranular('GESTION_CALENDARIO_EMPRESA', 'EMPRESA'),
   crearCalendarioEmpresaController,
 );
 
@@ -220,7 +219,6 @@ router.post(
   '/:idCalendario/eventos',
   verificarToken,
   validarRol('ADMIN'),
-  validarPermisoGranular('GESTION_EVENTOS_EMPRESA', 'EMPRESA'),
   crearEventoEmpresaController,
 );
 

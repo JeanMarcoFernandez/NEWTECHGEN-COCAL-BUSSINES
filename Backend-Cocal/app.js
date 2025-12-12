@@ -14,6 +14,9 @@ import seguridadRoutes from './routes/seguridadRoutes.js';
 import auditoriaRoutes from './routes/auditoriaRoutes.js';
 import twoFactorRoutes from "./routes/twoFactorRoutes.js";
 import restablecerContrasenaRoutes from './routes/restablecerContrasenaRoutes.js';
+import proyectosMiembrosRoutes from './routes/proyectosMiembrosRoutes.js';
+import miembrosProyectoRoutes from './routes/miembrosProyectoRoutes.js';
+import usuariosMiembrosRoutes from './routes/usuariosMiembrosRoutes.js';
 import empresaRoutes from './routes/empresaRoutes.js';
 import departamentoRoutes from './routes/departamentoRoutes.js';
 import proyectoRoutes from './routes/proyectoRoutes.js';
@@ -27,8 +30,11 @@ import reservaRecursoRoutes from './routes/reservaRecursoRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import recurso15Routes from './routes/recurso15Routes.js';
 import mantenimientoRoutes from './routes/mantenimientoRoutes.js';
-
+import usuariosRoutes from './routes/usuariosActualizado.js'
+import empresasRoutes from './routes/empresas.js'
 import permisoRoutes from './routes/permisoRoutes.js';
+import reportesCalendariosRoutes from './routes/reportesCalendariosRoutes.js';
+import reportesRecursosRoutes from './routes/reportesRecursosRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -37,6 +43,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.set('trust proxy', 1);
 // Rutas principales
+app.use('/api/usuarios-actualizado', usuariosRoutes);
+app.use('/api/empresas-adicion', empresasRoutes);
 app.use('/api/auth', autenticacionRutas);
 app.use('/api/usuarios', usuariosRutas);
 app.use('/api/usuarios-admin', usuariosAdminRoutes);
@@ -45,6 +53,9 @@ app.use('/api/seguridad', seguridadRoutes);
 app.use('/api/auditoria', auditoriaRoutes);
 app.use("/api/auth", twoFactorRoutes);
 app.use('/api/contrasena', restablecerContrasenaRoutes);
+app.use('/api/proyectos-miembros', proyectosMiembrosRoutes);
+app.use('/api/miembros-proyecto', miembrosProyectoRoutes);
+app.use('/api/usuarios-miembros', usuariosMiembrosRoutes);
 app.use('/api/empresas', empresaRoutes);
 app.use('/api/departamentos', departamentoRoutes);
 app.use('/api/proyectos', proyectoRoutes);
@@ -59,6 +70,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurso15', recurso15Routes);
 app.use('/api/mantenimiento', mantenimientoRoutes);
 app.use('/api/permisos', permisoRoutes);
+app.use('/api/reportes/calendarios', reportesCalendariosRoutes);
+app.use('/api/reportes/recursos', reportesRecursosRoutes);
 //Swagger
 configurarSwagger(app);
 
