@@ -30,8 +30,11 @@ import reservaRecursoRoutes from './routes/reservaRecursoRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import recurso15Routes from './routes/recurso15Routes.js';
 import mantenimientoRoutes from './routes/mantenimientoRoutes.js';
-
+import usuariosRoutes from './routes/usuariosActualizado.js'
+import empresasRoutes from './routes/empresas.js'
 import permisoRoutes from './routes/permisoRoutes.js';
+import reportesCalendariosRoutes from './routes/reportesCalendariosRoutes.js';
+import reportesRecursosRoutes from './routes/reportesRecursosRoutes.js';
 const app = express();
 
 app.use(cors());
@@ -40,6 +43,8 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.set('trust proxy', 1);
 // Rutas principales
+app.use('/api/usuarios-actualizado', usuariosRoutes);
+app.use('/api/empresas-adicion', empresasRoutes);
 app.use('/api/auth', autenticacionRutas);
 app.use('/api/usuarios', usuariosRutas);
 app.use('/api/usuarios-admin', usuariosAdminRoutes);
@@ -65,6 +70,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurso15', recurso15Routes);
 app.use('/api/mantenimiento', mantenimientoRoutes);
 app.use('/api/permisos', permisoRoutes);
+app.use('/api/reportes/calendarios', reportesCalendariosRoutes);
+app.use('/api/reportes/recursos', reportesRecursosRoutes);
 //Swagger
 configurarSwagger(app);
 
