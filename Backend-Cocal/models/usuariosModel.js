@@ -12,6 +12,7 @@ export async function dbListarTodosUsuarios() {
       apellido,
       cargo,
       rol,
+      estado,
       telefono,
       fecha_ingreso
     `)
