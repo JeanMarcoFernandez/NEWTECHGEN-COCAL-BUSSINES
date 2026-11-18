@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ./Backend-Cocal
+      dockerfile: Dockerfile
+
+    container_name: cocal-backend
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - ./Backend-Cocal/.env
+
+    environment:
+      PORT: 3000
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Front/cocal-business
+      dockerfile: Dockerfile
+
+    container_name: cocal-frontend
+
+    ports:
+      - "8200:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
