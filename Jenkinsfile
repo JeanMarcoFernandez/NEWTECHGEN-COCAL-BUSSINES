@@ -21,11 +21,27 @@ pipeline {
             }
         }
 
-        stage('Build and Deploy') {
+        stage('Build') {
             steps {
-                echo 'Building and deploying application...'
+                echo 'Building Docker images...'
 
-                bat 'docker compose up -d --build --remove-orphans'
+                bat 'docker compose up build cocal-frontend cocal-backend cocal-backend-test'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running backend unit tests with Jest...'
+
+                bat 'docker compose run --rm backend-test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying application...'
+
+                bat 'docker compose up -d --remove-orphans'
             }
         }
 

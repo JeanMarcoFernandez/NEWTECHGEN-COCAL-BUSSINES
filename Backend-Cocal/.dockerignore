@@ -1,5 +1,6 @@
 node_modules
 .dockerignore
 dockerfile
+dockerfile.test
 .env
 estructura.txt
