@@ -25,7 +25,7 @@ pipeline {
             steps {
                 echo 'Building Docker images...'
 
-                bat 'docker compose up build cocal-frontend cocal-backend cocal-backend-test'
+                bat 'docker compose build frontend backend backend-test'
             }
         }
 
