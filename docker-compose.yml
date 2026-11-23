@@ -35,6 +35,6 @@ services:
   backend-test:
     build:
       context: ./Backend-Cocal
-      dockerfile: Dockerfile.test
+      dockerfile: dockerfile.test
 
     container_name: cocal-backend-test
