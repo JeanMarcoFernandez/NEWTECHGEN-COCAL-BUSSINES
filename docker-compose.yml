@@ -25,7 +25,7 @@ services:
     container_name: cocal-frontend
 
     ports:
-      - "8200:80"
+      - "8500:80"
 
     depends_on:
       - backend

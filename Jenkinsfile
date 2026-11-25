@@ -57,7 +57,7 @@ pipeline {
     post {
         success {
             echo 'Deployment completed successfully!'
-            echo 'Frontend: http://localhost:8200'
+            echo 'Frontend: http://localhost:8500'
             echo 'Backend: http://localhost:3000'
         }
 
